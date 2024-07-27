@@ -48,6 +48,7 @@
         "buggregator/trap": "^1.10",
         "ergebnis/phpunit-slow-test-detector": "^2.14",
         "friendsofphp/php-cs-fixer": "^3.54",
+        "internal/dload": "^0.2.2",
         "pestphp/pest": "^2.34",
         "phpunit/phpunit": "^10.5",
         "spiral/boot": "^3.13",
@@ -60,7 +61,10 @@
     "autoload": {
         "psr-4": {
             "Spiral\\Grpc\\Client\\": "src/"
-        }
+        },
+        "files": [
+            "src/stub.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
@@ -80,7 +84,7 @@
     },
     "scripts": {
         "post-update-cmd": [
-            "@dload get --no-interaction"
+            "dload get --no-interaction"
         ],
         "cs:diff": "php-cs-fixer fix --dry-run -v --diff",
         "cs:fix": "php-cs-fixer fix -v",

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<dload>
+    <actions>
+        <download software="protoc-gen-php-grpc" version="^2024.1"/>
+        <download software="protoc"/>
+    </actions>
+    <registry>
+        <software name="Protobuf PGP gRPC generator" alias="protoc-gen-php-grpc">
+            <repository type="github" uri="roadrunner-server/roadrunner" asset-pattern="/^protoc-gen-php-grpc-.*/"/>
+            <file pattern="/^(protoc-gen-php-grpc)(?:\.exe)?$/"/>
+        </software>
+        <software name="ProtoC" alias="protoc">
+            <repository type="github" uri="protocolbuffers/protobuf" asset-pattern="/^protoc-.*/"/>
+            <file pattern="/^(protoc)(?:\.exe)?$/"/>
+        </software>
+    </registry>
+</dload>
