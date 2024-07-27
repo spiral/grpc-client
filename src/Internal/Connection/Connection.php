@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Internal\Connection;
 
-use Grpc\BaseStub;
 use Spiral\Grpc\Client\Config\ConnectionConfig;
 
 /**
@@ -12,7 +11,7 @@ use Spiral\Grpc\Client\Config\ConnectionConfig;
  */
 final class Connection implements ConnectionInterface
 {
-    private BaseStub $stub;
+    private ClientStub $stub;
 
     /**
      * True if Stub wasn't created yet
@@ -20,13 +19,13 @@ final class Connection implements ConnectionInterface
     private bool $closed = true;
 
     public function __construct(
-        private readonly ConnectionConfig $config,
+        public readonly ConnectionConfig $config,
     ) {
         \extension_loaded('grpc') or throw new \RuntimeException('The gRPC extension is required.');
         $this->initClient();
     }
 
-    public function getStub(): BaseStub
+    public function getStub(): ClientStub
     {
         $this->initClient();
         return $this->stub;
@@ -91,6 +90,17 @@ final class Connection implements ConnectionInterface
         $this->disconnect();
     }
 
+    private static function loadCert(?string $cert): ?string
+    {
+        return match (true) {
+            $cert === null, $cert === '' => null,
+            \is_file($cert) => false === ($content = \file_get_contents($cert))
+                ? throw new \InvalidArgumentException("Failed to load certificate from file `$cert`.")
+                : $content,
+            default => $cert,
+        };
+    }
+
     private function getState(bool $tryToConnect = false): ConnectionState
     {
         return ConnectionState::from($this->stub->getConnectivityState($tryToConnect));
@@ -115,7 +125,7 @@ final class Connection implements ConnectionInterface
             ]
             : ['credentials' => \Grpc\ChannelCredentials::createInsecure()];
 
-        $this->stub = new BaseStub($this->config->address, $options);
+        $this->stub = new ClientStub($this->config->address, $options);
         $this->closed = false;
     }
 
@@ -131,16 +141,5 @@ final class Connection implements ConnectionInterface
     {
         /** @psalm-suppress InvalidOperand */
         return $this->stub->waitForReady((int) ($timeout * 1_000_000));
-    }
-
-    private static function loadCert(?string $cert): ?string
-    {
-        return match (true) {
-            $cert === null, $cert === '' => null,
-            \is_file($cert) => false === ($content = \file_get_contents($cert))
-                ? throw new \InvalidArgumentException("Failed to load certificate from file `$cert`.")
-                : $content,
-            default => $cert,
-        };
     }
 }
