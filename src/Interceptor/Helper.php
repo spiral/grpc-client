@@ -20,10 +20,10 @@ final class Helper
     }
 
     /**
-     * @param Connection[] $connection
+     * @param Connection[] $connections
      */
-    public static function withConnections(CallContextInterface $context, array $connection): CallContextInterface
+    public static function withConnections(CallContextInterface $context, array $connections): CallContextInterface
     {
-        return $context->withAttribute(self::ATTR_CONNECTIONS, $connection);
+        return $context->withAttribute(self::ATTR_CONNECTIONS, $connections);
     }
 }

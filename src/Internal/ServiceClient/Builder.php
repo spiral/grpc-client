@@ -2,14 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Spiral\Grpc\Client\Internal;
+namespace Spiral\Grpc\Client\Internal\ServiceClient;
 
+use Psr\Container\ContainerInterface;
+use Spiral\Core\Container\Autowire;
+use Spiral\Core\FactoryInterface;
+use Spiral\Grpc\Client\Config\GrpcClientConfig;
 use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Internal\Connection\Connection;
 use Spiral\Grpc\Client\Internal\Interceptor\GrpcServiceCallHandler;
 use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
-use Spiral\Grpc\Client\Internal\ServiceClient\ClassGenerator;
-use Spiral\Grpc\Client\Internal\ServiceClient\ServiceClientInterface;
 use Spiral\Interceptors\PipelineBuilderInterface;
 
 /**
@@ -25,13 +27,23 @@ final class Builder
     private readonly PipelineBuilderInterface $pipelineBuilder;
 
     public function __construct(
-        PipelineBuilderInterface $pipelineBuilder,
         private readonly ServiceRegistry $registry,
+        PipelineBuilderInterface $pipelineBuilder,
+        GrpcClientConfig $config,
+        ?FactoryInterface $container = null,
     ) {
+        // Prepare common interceptors
+        if ($container !== null) {
+            $list = [];
+            foreach ($config->interceptors as $interceptor) {
+                $list[] = \is_string($interceptor) || $interceptor instanceof Autowire
+                    ? $container->make($interceptor)
+                    : $interceptor;
+            }
+        }
+
         // Create pipeline builder with common interceptors
-        $this->pipelineBuilder = $pipelineBuilder->withInterceptors(
-            // todo
-        );
+        $this->pipelineBuilder = $pipelineBuilder->withInterceptors(...$list);
     }
 
     /**
@@ -79,7 +91,7 @@ final class Builder
     }
 
     /**
-     * @param list<ServiceConfig> $services
+     * @param ServiceConfig $services
      * @return array<Connection>
      */
     private function fetchConnections(array $services): array
