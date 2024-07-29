@@ -22,11 +22,11 @@ final class ClassGenerator
 
         foreach ($reflection->getMethods() as $method) {
             $returnType = $method->getReturnType()->getName();
-            /** @see ServiceClientTrait::_callAction() */
+            /** @see ServiceClientTrait::_handle() */
             $methods[] = self::renderMethod(
                 $method,
                 <<<PHP
-                return \$this->_callAction(__FUNCTION__, \$ctx, \$in, '$returnType');
+                return \$this->_handle(__FUNCTION__, \$ctx, \$in, '$returnType');
                 PHP,
             );
         }

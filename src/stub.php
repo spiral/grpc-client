@@ -17,7 +17,8 @@ if (!\interface_exists(ContextInterface::class, true)) {
      *
      * @psalm-type TValues = array<string, mixed>
      */
-    interface ContextInterface {
+    interface ContextInterface
+    {
         /**
          * Create context with new value.
          *

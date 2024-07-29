@@ -18,6 +18,22 @@ final class BackoffThrottlerTest extends TestCase
         yield 'backoffCoefficient is less than 1' => [1, 0.1, 0.9, '$backoffCoefficient must be greater than 1.'];
     }
 
+    public static function provideCalculatorData(): iterable
+    {
+        yield 'first attempt' => [1000, 1, 1000];
+        yield 'second attempt' => [1500, 2, 500];
+        yield 'third attempt' => [4500, 3, 500];
+        yield 'overflow' => [300_000, 100, 500];
+    }
+
+    public static function provideCalculatorInvalidArgs(): iterable
+    {
+        yield 'fails is negative' => [-1, 100];
+        yield 'fails is zero' => [0, 100];
+        yield 'interval is negative' => [1, -100];
+        yield 'interval is zero' => [1, 0];
+    }
+
     #[DataProvider('provideConstructorInvalidArguments')]
     public function testInvalidArguments(
         int $maxInterval,
@@ -30,28 +46,12 @@ final class BackoffThrottlerTest extends TestCase
         new BackoffThrottler($maxInterval, $maxJitterCoefficient, $backoffCoefficient);
     }
 
-    public static function provideCalculatorData(): iterable
-    {
-        yield 'first attempt' => [1000, 1, 1000];
-        yield 'second attempt' => [1500, 2, 500];
-        yield 'third attempt' => [4500, 3, 500];
-        yield 'overflow' => [300_000, 100, 500];
-    }
-
     #[DataProvider('provideCalculatorData')]
     public function testCalculateSleepTime(int $expected, int $fails, int $interval): void
     {
         $throttler = new BackoffThrottler(300_000, 0.0, 3.0);
 
         self::assertSame($expected, $throttler->calculateSleepTime($fails, $interval));
-    }
-
-    public static function provideCalculatorInvalidArgs(): iterable
-    {
-        yield 'fails is negative' => [-1, 100];
-        yield 'fails is zero' => [0, 100];
-        yield 'interval is negative' => [1, -100];
-        yield 'interval is zero' => [1, 0];
     }
 
     #[DataProvider('provideCalculatorInvalidArgs')]

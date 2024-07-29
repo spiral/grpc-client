@@ -9,8 +9,11 @@ use Spiral\Interceptors\PipelineBuilderInterface;
 
 interface ServiceClientInterface
 {
+    /**
+     * @param list<Connection> $connections
+     */
     public function __construct(
-        Connection $connection,
         PipelineBuilderInterface $pipeline,
+        array $connections,
     );
 }
