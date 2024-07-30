@@ -41,9 +41,14 @@ final class Helper
         return $context->withAttribute(self::ATTR_CONNECTIONS, $connections);
     }
 
+    public static function getCurrentConnection(CallContextInterface $context): Connection
+    {
+        return $context->getArguments()[0];
+    }
+
     public static function withCurrentConnection(
         CallContextInterface $context,
-        Connection $connection
+        Connection $connection,
     ): CallContextInterface {
         $args = $context->getArguments();
         $args[0] = $connection;

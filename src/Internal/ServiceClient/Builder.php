@@ -20,6 +20,7 @@ final class Builder
 {
     /** @var array<class-string, class-string<ServiceClientInterface>> */
     private static array $cache = [];
+
     /**
      * Pipeline builder with prepared common interceptors.
      */
@@ -29,14 +30,14 @@ final class Builder
         private readonly ServiceRegistry $registry,
         PipelineBuilderInterface $pipelineBuilder,
         GrpcClientConfig $config,
-        ?FactoryInterface $container = null,
+        ?FactoryInterface $factory = null,
     ) {
         // Prepare common interceptors
-        if ($container !== null) {
+        if ($factory !== null) {
             $list = [];
             foreach ($config->interceptors as $interceptor) {
                 $list[] = \is_string($interceptor) || $interceptor instanceof Autowire
-                    ? $container->make($interceptor)
+                    ? $factory->make($interceptor)
                     : $interceptor;
             }
         }
@@ -97,8 +98,7 @@ final class Builder
     {
         $result = [];
         foreach ($services as $service) {
-            $connections = \is_array($service->connections) ? $service->connections : [$service->connections];
-            foreach ($connections as $connection) {
+            foreach ($service->connections as $connection) {
                 $result[] = $this->registry->getConnection($connection);
             }
         }

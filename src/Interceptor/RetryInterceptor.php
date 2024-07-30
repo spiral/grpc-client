@@ -14,6 +14,11 @@ use Spiral\Interceptors\Context\CallContextInterface;
 use Spiral\Interceptors\HandlerInterface;
 use Spiral\Interceptors\InterceptorInterface;
 
+/**
+ * Apply retry logic to the gRPC call.
+ *
+ * Use {@see RetryInterceptor::createAutowireConfig()} to create a config DTO in a configuration file.
+ */
 final class RetryInterceptor implements InterceptorInterface
 {
     public const RETRYABLE_ERRORS = [
@@ -45,8 +50,8 @@ final class RetryInterceptor implements InterceptorInterface
      * @param float|null $maximumJitterCoefficient Maximum jitter to apply.
      */
     public static function createAutowireConfig(
-        ?int $initialInterval = RetryOptions::DEFAULT_INITIAL_INTERVAL,
-        ?int $congestionInitialInterval = RetryOptions::DEFAULT_CONGESTION_INITIAL_INTERVAL,
+        ?int $initialInterval = self::DEFAULT_INITIAL_INTERVAL_MS,
+        ?int $congestionInitialInterval = self::DEFAULT_CONGESTION_INITIAL_INTERVAL_MS,
         float $backoffCoefficient = RetryOptions::DEFAULT_BACKOFF_COEFFICIENT,
         ?int $maximumInterval = RetryOptions::DEFAULT_MAXIMUM_INTERVAL,
         int $maximumAttempts = RetryOptions::DEFAULT_MAXIMUM_ATTEMPTS,
