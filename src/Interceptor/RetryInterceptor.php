@@ -33,10 +33,14 @@ final class RetryInterceptor implements InterceptorInterface
 
     /**
      * @param int<0, max>|null $initialInterval Initial interval in milliseconds.
+     *        Default to 50ms.
      * @param int<0, max>|null $congestionInitialInterval Initial interval on congestion related failures
      *        (i.e. {@see StatusCode::ResourceExhausted}) in milliseconds.
+     *        Default to 1000ms.
      * @param float $backoffCoefficient Coefficient used to calculate the next retry backoff interval.
+     *        Default is 2.0.
      * @param int<0, max>|null $maximumInterval Maximum backoff interval between retries in milliseconds.
+     *        Default is 100x of {@see $initialInterval}.
      * @param int<0, max> $maximumAttempts Maximum number of attempts.
      * @param float|null $maximumJitterCoefficient Maximum jitter to apply.
      */

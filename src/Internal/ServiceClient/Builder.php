@@ -90,16 +90,19 @@ final class Builder
     }
 
     /**
-     * @param ServiceConfig $services
+     * @param array<ServiceConfig> $services
      * @return array<ConnectionInterface>
      */
     private function fetchConnections(array $services): array
     {
-        $connections = [];
+        $result = [];
         foreach ($services as $service) {
-            $connections[] = $this->registry->getConnection($service->connection);
+            $connections = \is_array($service->connections) ? $service->connections : [$service->connections];
+            foreach ($connections as $connection) {
+                $result[] = $this->registry->getConnection($connection);
+            }
         }
 
-        return $connections;
+        return $result;
     }
 }

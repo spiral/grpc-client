@@ -9,6 +9,9 @@ use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Internal\Connection\Connection;
 use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
 
+/**
+ * @internal
+ */
 final class ServiceRegistry
 {
     /**

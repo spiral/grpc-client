@@ -49,7 +49,7 @@ final class RetryOptions
      * Exponential backoff leads to interval increase.
      * This value is the cap of the interval.
      *
-     * Default is 100x of {@see $initialInterval}.
+     * Default is 100x of {@see $initialInterval} if not set.
      * @var int<0, max>|null
      */
     public ?int $maximumInterval = self::DEFAULT_MAXIMUM_INTERVAL;
@@ -97,7 +97,6 @@ final class RetryOptions
      *
      * @param int<0, max>|null $interval Interval to wait on first retry, on congestion failures.
      *        Defaults to 1000ms, which is used if set to {@see null}.
-     *
      */
     public function withCongestionInitialInterval(?int $interval): self
     {
