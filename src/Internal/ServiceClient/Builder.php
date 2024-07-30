@@ -9,8 +9,8 @@ use Spiral\Core\FactoryInterface;
 use Spiral\Grpc\Client\Config\GrpcClientConfig;
 use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
-use Spiral\Grpc\Client\Internal\Interceptor\GrpcServiceCallHandler;
 use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
+use Spiral\Interceptors\Handler\CallableHandler;
 use Spiral\Interceptors\PipelineBuilderInterface;
 
 /**
@@ -70,7 +70,7 @@ final class Builder
         $connections = $this->fetchConnections($services);
 
         // Interceptors pipeline
-        $handler = $this->pipelineBuilder->build(new GrpcServiceCallHandler());
+        $handler = $this->pipelineBuilder->build(new CallableHandler());
 
         /** @see ServiceClientInterface::__construct() */
         return new $class($handler, $connections);

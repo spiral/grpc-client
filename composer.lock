@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fdcf7ea6684a733898c917b0263ab3c",
+    "content-hash": "60f105529549316a30d82b37ce7ddf5e",
     "packages": [
         {
             "name": "google/common-protos",
@@ -373,12 +373,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/spiral/hmvc.git",
-                "reference": "4ebe115b4555867e55cc54a8543feb0a33a8b012"
+                "reference": "17fcb467a211b6994f06ae8e1b88359cb2c2ca70"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spiral/hmvc/zipball/4ebe115b4555867e55cc54a8543feb0a33a8b012",
-                "reference": "4ebe115b4555867e55cc54a8543feb0a33a8b012",
+                "url": "https://api.github.com/repos/spiral/hmvc/zipball/17fcb467a211b6994f06ae8e1b88359cb2c2ca70",
+                "reference": "17fcb467a211b6994f06ae8e1b88359cb2c2ca70",
                 "shasum": ""
             },
             "require": {
@@ -432,7 +432,7 @@
                 "issues": "https://github.com/spiral/framework/issues",
                 "source": "https://github.com/spiral/hmvc"
             },
-            "time": "2024-06-26T16:11:27+00:00"
+            "time": "2024-07-30T20:51:48+00:00"
         },
         {
             "name": "spiral/logger",
