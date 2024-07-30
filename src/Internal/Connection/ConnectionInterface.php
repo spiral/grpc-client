@@ -24,4 +24,11 @@ interface ConnectionInterface
      *         an error occurs during the connection process.
      */
     public function connect(float $timeout): void;
+
+    /**
+     * Get the service client stub to make RPC calls.
+     *
+     * @internal Do not use this method directly.
+     */
+    public function getStub(): ClientStub;
 }

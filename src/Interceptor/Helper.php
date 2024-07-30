@@ -4,12 +4,26 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Interceptor;
 
-use Spiral\Grpc\Client\Internal\Connection\Connection;
+use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface as Connection;
 use Spiral\Interceptors\Context\CallContextInterface;
 
 final class Helper
 {
+    public const ATTR_DESERIALIZER = 'deserializer';
+
     public const ATTR_CONNECTIONS = 'connections';
+
+    public static function getDeserializer(CallContextInterface $context): callable
+    {
+        $deserializer = $context->getAttribute(self::ATTR_DESERIALIZER);
+        \is_callable($deserializer) or throw new \InvalidArgumentException('Deserializer not found in the context.');
+        return $deserializer;
+    }
+
+    public static function withDeserializer(CallContextInterface $context, callable $deserializer): CallContextInterface
+    {
+        return $context->withAttribute(self::ATTR_DESERIALIZER, $deserializer);
+    }
 
     /**
      * @return Connection[]
@@ -25,5 +39,14 @@ final class Helper
     public static function withConnections(CallContextInterface $context, array $connections): CallContextInterface
     {
         return $context->withAttribute(self::ATTR_CONNECTIONS, $connections);
+    }
+
+    public static function withCurrentConnection(
+        CallContextInterface $context,
+        Connection $connection
+    ): CallContextInterface {
+        $args = $context->getArguments();
+        $args[0] = $connection;
+        return $context->withArguments($args);
     }
 }

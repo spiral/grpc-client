@@ -7,6 +7,7 @@ namespace Spiral\Grpc\Client\Internal\Registry;
 use Spiral\Grpc\Client\Config\ConnectionConfig;
 use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Internal\Connection\Connection;
+use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
 
 final class ServiceRegistry
 {
@@ -37,7 +38,7 @@ final class ServiceRegistry
         }
     }
 
-    public function getConnection(ConnectionConfig $connection): Connection
+    public function getConnection(ConnectionConfig $connection): ConnectionInterface
     {
         return new Connection($connection);
     }

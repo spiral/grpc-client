@@ -21,7 +21,9 @@ final class ClassGenerator
         $methods = [];
 
         foreach ($reflection->getMethods() as $method) {
-            $returnType = $method->getReturnType()->getName();
+            $returnType = $method->getReturnType()?->getName() ?? throw new \RuntimeException(
+                "Method {$method->getName()} must have a return type.",
+            );
             /** @see ServiceClientTrait::_handle() */
             $methods[] = self::renderMethod(
                 $method,
@@ -39,6 +41,7 @@ final class ClassGenerator
             $fullClassName = $namespace . '\\' . $newClassName;
         } while (\class_exists($fullClassName));
 
+        /** @var class-string<T&ServiceClientInterface> $fullClassName */
         return [$fullClassName, <<<PHP
             namespace $namespace;
             final class GeneratedServiceClient implements

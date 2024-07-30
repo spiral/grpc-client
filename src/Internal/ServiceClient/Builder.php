@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Internal\ServiceClient;
 
-use Psr\Container\ContainerInterface;
 use Spiral\Core\Container\Autowire;
 use Spiral\Core\FactoryInterface;
 use Spiral\Grpc\Client\Config\GrpcClientConfig;
 use Spiral\Grpc\Client\Config\ServiceConfig;
-use Spiral\Grpc\Client\Internal\Connection\Connection;
+use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
 use Spiral\Grpc\Client\Internal\Interceptor\GrpcServiceCallHandler;
 use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
 use Spiral\Interceptors\PipelineBuilderInterface;
@@ -92,7 +91,7 @@ final class Builder
 
     /**
      * @param ServiceConfig $services
-     * @return array<Connection>
+     * @return array<ConnectionInterface>
      */
     private function fetchConnections(array $services): array
     {

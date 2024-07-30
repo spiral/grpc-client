@@ -6,7 +6,7 @@ namespace Spiral\Grpc\Client\Internal\ServiceClient;
 
 use Google\Protobuf\Internal\Message;
 use Spiral\Grpc\Client\Interceptor\Helper;
-use Spiral\Grpc\Client\Internal\Connection\Connection;
+use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
 use Spiral\Interceptors\Context\CallContext;
 use Spiral\Interceptors\Context\Target;
 use Spiral\Interceptors\HandlerInterface;
@@ -20,7 +20,7 @@ use Spiral\RoadRunner\GRPC\ContextInterface as RRGrpcContext;
 trait ServiceClientTrait
 {
     /**
-     * @param list<Connection> $connections
+     * @param list<ConnectionInterface> $connections
      * @see ServiceClientInterface::__construct()
      */
     public function __construct(
@@ -78,7 +78,7 @@ trait ServiceClientTrait
      * @param non-empty-string $method
      */
     private function _invoke(
-        Connection $connection,
+        ConnectionInterface $connection,
         string $method,
         Message $in,
         callable $deserializer,
