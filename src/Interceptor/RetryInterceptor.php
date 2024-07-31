@@ -20,7 +20,7 @@ use Spiral\Interceptors\InterceptorInterface;
  * If the timeout is defined in the context before the interceptor, it will be used as a deadline between retries.
  * To set the timeout, use {@see SetTimoutInterceptor}.
  *
- * Use {@see RetryInterceptor::createAutowireConfig()} to create a config DTO in a configuration file.
+ * Use {@see RetryInterceptor::createConfig()} to create a config DTO in a configuration file.
  */
 final class RetryInterceptor implements InterceptorInterface
 {
@@ -52,7 +52,7 @@ final class RetryInterceptor implements InterceptorInterface
      * @param int<0, max> $maximumAttempts Maximum number of attempts.
      * @param float|null $maximumJitterCoefficient Maximum jitter to apply.
      */
-    public static function createAutowireConfig(
+    public static function createConfig(
         ?int $initialInterval = self::DEFAULT_INITIAL_INTERVAL_MS,
         ?int $congestionInitialInterval = self::DEFAULT_CONGESTION_INITIAL_INTERVAL_MS,
         float $backoffCoefficient = RetryOptions::DEFAULT_BACKOFF_COEFFICIENT,

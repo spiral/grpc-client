@@ -10,6 +10,10 @@ use Spiral\Interceptors\Context\CallContextInterface;
 use Spiral\Interceptors\HandlerInterface;
 use Spiral\Interceptors\InterceptorInterface;
 
+/**
+ * Rotate connections until the first successful response.
+ * If there is a connection that is already connected, it will be the first to try.
+ */
 final class ConnectionsRotationInterceptor implements InterceptorInterface
 {
     public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
