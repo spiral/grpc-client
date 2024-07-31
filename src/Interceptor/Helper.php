@@ -9,21 +9,7 @@ use Spiral\Interceptors\Context\CallContextInterface;
 
 final class Helper
 {
-    public const ATTR_DESERIALIZER = 'deserializer';
-
     public const ATTR_CONNECTIONS = 'connections';
-
-    public static function getDeserializer(CallContextInterface $context): callable
-    {
-        $deserializer = $context->getAttribute(self::ATTR_DESERIALIZER);
-        \is_callable($deserializer) or throw new \InvalidArgumentException('Deserializer not found in the context.');
-        return $deserializer;
-    }
-
-    public static function withDeserializer(CallContextInterface $context, callable $deserializer): CallContextInterface
-    {
-        return $context->withAttribute(self::ATTR_DESERIALIZER, $deserializer);
-    }
 
     /**
      * @return Connection[]

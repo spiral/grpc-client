@@ -43,14 +43,16 @@ final class ExecuteServiceInterceptors implements Interceptor
      * Autowire the interceptors.
      *
      * @param iterable<Interceptor|class-string<Interceptor>|Autowire> $interceptors
-     * @return iterable<Interceptor>
+     * @return \Traversable<Interceptor>
      */
-    private function autowire(iterable $interceptors): iterable
+    private function autowire(iterable $interceptors): \Traversable
     {
         foreach ($interceptors as $interceptor) {
-            yield \is_string($interceptor) || $interceptor instanceof Autowire
-                ? $this->factory->make($interceptor)
-                : $interceptor;
+            yield match (true) {
+                \is_string($interceptor) => $this->factory->make($interceptor),
+                $interceptor instanceof Autowire => $interceptor->resolve($this->factory),
+                default => $interceptor,
+            };
         }
     }
 }

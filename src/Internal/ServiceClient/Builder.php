@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Internal\ServiceClient;
 
-use Spiral\Core\Container\Autowire;
-use Spiral\Core\FactoryInterface;
-use Spiral\Grpc\Client\Config\GrpcClientConfig;
 use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
 use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
@@ -14,7 +11,10 @@ use Spiral\Interceptors\Handler\CallableHandler;
 use Spiral\Interceptors\PipelineBuilderInterface;
 
 /**
- *Builder for gRPC service clients.
+ * Builder for gRPC service clients.
+ *
+ * @internal
+ * @psalm-internal Spiral\Grpc\Client
  */
 final class Builder
 {
@@ -22,29 +22,12 @@ final class Builder
     private static array $cache = [];
 
     /**
-     * Pipeline builder with prepared common interceptors.
+     * @param PipelineBuilderInterface $pipelineBuilder Pipeline builder with prepared common interceptors.
      */
-    private readonly PipelineBuilderInterface $pipelineBuilder;
-
     public function __construct(
         private readonly ServiceRegistry $registry,
-        PipelineBuilderInterface $pipelineBuilder,
-        GrpcClientConfig $config,
-        ?FactoryInterface $factory = null,
-    ) {
-        // Prepare common interceptors
-        if ($factory !== null) {
-            $list = [];
-            foreach ($config->interceptors as $interceptor) {
-                $list[] = \is_string($interceptor) || $interceptor instanceof Autowire
-                    ? $factory->make($interceptor)
-                    : $interceptor;
-            }
-        }
-
-        // Create pipeline builder with common interceptors
-        $this->pipelineBuilder = $pipelineBuilder->withInterceptors(...$list);
-    }
+        private readonly PipelineBuilderInterface $pipelineBuilder,
+    ) {}
 
     /**
      * @template T
@@ -81,7 +64,7 @@ final class Builder
      * @param class-string<T> $service
      * @return class-string<T&ServiceClientInterface>
      */
-    public function prepareClientClass(string $service): string
+    private function prepareClientClass(string $service): string
     {
         [$className, $classCode] = ClassGenerator::generate($service);
 
