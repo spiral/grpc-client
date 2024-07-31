@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Interceptor;
 
+use Spiral\Core\Attribute\Proxy;
 use Spiral\Core\Container\Autowire;
 use Spiral\Core\FactoryInterface;
 use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
@@ -18,7 +19,7 @@ use Spiral\Interceptors\PipelineBuilderInterface;
 final class ExecuteServiceInterceptors implements Interceptor
 {
     public function __construct(
-        private readonly FactoryInterface $factory,
+        #[Proxy] private readonly FactoryInterface $factory,
         private readonly ServiceRegistry $serviceRegistry,
         private readonly PipelineBuilderInterface $pipelineBuilder,
     ) {}

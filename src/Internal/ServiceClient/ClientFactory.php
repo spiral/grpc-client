@@ -7,8 +7,7 @@ namespace Spiral\Grpc\Client\Internal\ServiceClient;
 use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
 use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
-use Spiral\Interceptors\Handler\CallableHandler;
-use Spiral\Interceptors\PipelineBuilderInterface;
+use Spiral\Interceptors\HandlerInterface;
 
 /**
  * Builder for gRPC service clients.
@@ -16,25 +15,22 @@ use Spiral\Interceptors\PipelineBuilderInterface;
  * @internal
  * @psalm-internal Spiral\Grpc\Client
  */
-final class Builder
+final class ClientFactory
 {
-    /** @var array<class-string, class-string<ServiceClientInterface>> */
+    /** @var array<class-string, class-string> */
     private static array $cache = [];
 
-    /**
-     * @param PipelineBuilderInterface $pipelineBuilder Pipeline builder with prepared common interceptors.
-     */
     public function __construct(
         private readonly ServiceRegistry $registry,
-        private readonly PipelineBuilderInterface $pipelineBuilder,
     ) {}
 
     /**
      * @template T
      * @param class-string<T> $interface gRPC service interface.
-     * @return T
+     * @param HandlerInterface $handler Interceptor pipeline in a handler form.
+     * @return T&ServiceClientInterface
      */
-    public function build(string $interface): object
+    public function make(string $interface, HandlerInterface $handler): object
     {
         \interface_exists($interface, true) or throw new \InvalidArgumentException(
             "Service interface not found: $interface",
@@ -51,9 +47,6 @@ final class Builder
 
         // Get related Connections
         $connections = $this->fetchConnections($services);
-
-        // Interceptors pipeline
-        $handler = $this->pipelineBuilder->build(new CallableHandler());
 
         /** @see ServiceClientInterface::__construct() */
         return new $class($handler, $connections);

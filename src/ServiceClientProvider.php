@@ -4,44 +4,32 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client;
 
+use Spiral\Core\Attribute\Proxy;
 use Spiral\Core\Attribute\Singleton;
 use Spiral\Core\Container\Autowire;
 use Spiral\Core\FactoryInterface;
 use Spiral\Grpc\Client\Config\GrpcClientConfig;
 use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
-use Spiral\Grpc\Client\Internal\ServiceClient\Builder;
+use Spiral\Grpc\Client\Internal\ServiceClient\ClientFactory;
+use Spiral\Interceptors\Handler\CallableHandler;
 use Spiral\Interceptors\InterceptorInterface;
 use Spiral\Interceptors\PipelineBuilderInterface;
 
 #[Singleton]
 final class ServiceClientProvider
 {
-    private readonly Builder $builder;
+    private readonly ClientFactory $builder;
 
     public function __construct(
         private readonly GrpcClientConfig $config,
-        PipelineBuilderInterface $pipelineBuilder,
-        FactoryInterface $factory,
+        private readonly PipelineBuilderInterface $pipelineBuilder,
+        #[Proxy] private readonly FactoryInterface $factory,
     ) {
         // Collect all the services
         $registry = new ServiceRegistry();
         $registry->addServices(...$this->config->services);
 
-        // Prepare common interceptors
-        $list = [];
-        foreach ($config->interceptors as $interceptor) {
-            $list[] = match (true) {
-                \is_string($interceptor) => $factory->make($interceptor),
-                $interceptor instanceof Autowire => $interceptor->resolve($factory),
-                default => $interceptor,
-            };
-        }
-
-        // Create pipeline builder with common interceptors
-        /** @var InterceptorInterface[] $list */
-        $pipelineBuilder = $pipelineBuilder->withInterceptors(...$list);
-
-        $this->builder = new Builder($registry, $pipelineBuilder);
+        $this->builder = new ClientFactory($registry, $pipelineBuilder);
     }
 
     /**
@@ -68,6 +56,26 @@ final class ServiceClientProvider
      */
     public function getServiceClient(string $service): object
     {
-        return $this->builder->build($service);
+        $handler = $this->makePipeline()->build(new CallableHandler());
+        return $this->builder->make($service, $handler);
+    }
+
+    /**
+     * Create an interceptor pipeline builder with common interceptors
+     */
+    private function makePipeline(): PipelineBuilderInterface
+    {
+        // Prepare common interceptors
+        /** @var InterceptorInterface[] $list */
+        $list = [];
+        foreach ($this->config->interceptors as $interceptor) {
+            $list[] = match (true) {
+                \is_string($interceptor) => $this->factory->make($interceptor),
+                $interceptor instanceof Autowire => $interceptor->resolve($this->factory),
+                default => $interceptor,
+            };
+        }
+
+        return $this->pipelineBuilder->withInterceptors(...$list);
     }
 }
