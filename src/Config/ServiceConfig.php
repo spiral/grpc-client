@@ -24,7 +24,6 @@ final class ServiceConfig
     public function __construct(
         ConnectionConfig|array $connections,
         public readonly array $interceptors = [],
-        public readonly array $options = [], // todo
         public readonly array $interfaces = [],
     ) {
         $this->connections = \is_array($connections) ? $connections : [$connections];

@@ -40,4 +40,21 @@ final class Helper
         $args[0] = $connection;
         return $context->withArguments($args);
     }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    public static function getOptions(CallContextInterface $context): array
+    {
+        return $context->getArguments()[5];
+    }
+
+    public static function withOptions(
+        CallContextInterface $context,
+        array $connection,
+    ): CallContextInterface {
+        $args = $context->getArguments();
+        $args[5] = $connection;
+        return $context->withArguments($args);
+    }
 }

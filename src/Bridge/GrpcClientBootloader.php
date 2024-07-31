@@ -10,7 +10,7 @@ use Spiral\Grpc\Client\ServiceClientProvider;
 
 class GrpcClientBootloader extends Bootloader
 {
-    public function init(BinderInterface $binder): void
+    public function boot(BinderInterface $binder): void
     {
         // Define implementations for service client interfaces
         //
