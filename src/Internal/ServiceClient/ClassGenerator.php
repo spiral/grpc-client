@@ -37,14 +37,15 @@ final class ClassGenerator
         $base = \str_replace('Interface', '', $reflection->getShortName()) . 'Client';
         $i = 0;
         do {
-            $newClassName = $base . ($i++ === 0 ? '' : $i);
+            $newClassName = $base . ($i === 0 ? '' : $i);
             $fullClassName = $namespace . '\\' . $newClassName;
+            ++$i;
         } while (\class_exists($fullClassName));
 
         /** @var class-string<T&ServiceClientInterface> $fullClassName */
         return [$fullClassName, <<<PHP
             namespace $namespace;
-            final class GeneratedServiceClient implements
+            final class $newClassName implements
                 \\$interface,
                 \Spiral\Grpc\Client\Internal\ServiceClient\ServiceClientInterface
             {

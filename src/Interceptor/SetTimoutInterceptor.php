@@ -45,7 +45,8 @@ final class SetTimoutInterceptor implements InterceptorInterface
         if ($this->timeout === null) {
             unset($options['timeout']);
         } else {
-            $options['timeout'] = [$this->timeout];
+            // Convert to microseconds.
+            $options['timeout'] = $this->timeout * 1000;
         }
 
         return $handler->handle(Helper::withOptions($context, $options));

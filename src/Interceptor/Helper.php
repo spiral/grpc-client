@@ -42,7 +42,67 @@ final class Helper
     }
 
     /**
-     * @return array<string, list<string>>
+     * @return object {@see Message} or custom message object
+     */
+    public static function getMessage(CallContextInterface $context): object
+    {
+        return $context->getArguments()[4];
+    }
+
+    /**
+     * @param object $argument Should be {@see Message} at the end
+     */
+    public static function withMessage(
+        CallContextInterface $context,
+        object $argument,
+    ): CallContextInterface {
+        $args = $context->getArguments();
+        $args[2] = $argument;
+        return $context->withArguments($args);
+    }
+
+    /**
+     * @return array<non-empty-string, list<scalar>>
+     */
+    public static function getMetadata(CallContextInterface $context): array
+    {
+        return $context->getArguments()[2];
+    }
+
+    /**
+     * @param array<non-empty-string, list<scalar>> $metadata
+     */
+    public static function withMetadata(
+        CallContextInterface $context,
+        array $metadata,
+    ): CallContextInterface {
+        $args = $context->getArguments();
+        $args[4] = $metadata;
+        return $context->withArguments($args);
+    }
+
+    /**
+     * @return class-string
+     */
+    public static function getReturnType(CallContextInterface $context): string
+    {
+        return $context->getArguments()[3][0];
+    }
+
+    /**
+     * @param class-string $returnType
+     */
+    public static function withReturnType(
+        CallContextInterface $context,
+        string $returnType,
+    ): CallContextInterface {
+        $args = $context->getArguments();
+        $args[3][0] = $returnType;
+        return $context->withArguments($args);
+    }
+
+    /**
+     * @return array<non-empty-string, scalar>
      */
     public static function getOptions(CallContextInterface $context): array
     {
@@ -51,10 +111,10 @@ final class Helper
 
     public static function withOptions(
         CallContextInterface $context,
-        array $connection,
+        array $options,
     ): CallContextInterface {
         $args = $context->getArguments();
-        $args[5] = $connection;
+        $args[5] = $options;
         return $context->withArguments($args);
     }
 }

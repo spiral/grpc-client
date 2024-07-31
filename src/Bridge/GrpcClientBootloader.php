@@ -17,7 +17,7 @@ class GrpcClientBootloader extends Bootloader
         /** @var ServiceClientProvider $provider */
         $provider = $binder->get(ServiceClientProvider::class);
         foreach ($provider->getClientInterfaces() as $interface) {
-            $binder->bindSingleton($interface, [$provider, 'getServiceClient']);
+            $binder->bindSingleton($interface, static fn() => $provider->getServiceClient($interface));
         }
     }
 }

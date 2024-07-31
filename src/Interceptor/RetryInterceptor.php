@@ -17,6 +17,9 @@ use Spiral\Interceptors\InterceptorInterface;
 /**
  * Apply retry logic to the gRPC call.
  *
+ * If the timeout is defined in the context before the interceptor, it will be used as a deadline between retries.
+ * To set the timeout, use {@see SetTimoutInterceptor}.
+ *
  * Use {@see RetryInterceptor::createAutowireConfig()} to create a config DTO in a configuration file.
  */
 final class RetryInterceptor implements InterceptorInterface
@@ -24,8 +27,8 @@ final class RetryInterceptor implements InterceptorInterface
     public const RETRYABLE_ERRORS = [
         StatusCode::ResourceExhausted,
         StatusCode::Unavailable,
+        StatusCode::Unknown,
         StatusCode::Aborted,
-        StatusCode::DeadlineExceeded,
     ];
 
     private const DEFAULT_INITIAL_INTERVAL_MS = 50;
@@ -74,12 +77,18 @@ final class RetryInterceptor implements InterceptorInterface
         $retryOption = $context->getAttribute(RetryOptions::class, $this->defaultRetryOptions);
         \assert($retryOption instanceof RetryOptions);
 
+        // Use deadline if timeout was defined before the interceptor
+        $timeout = Helper::getOptions($context)['timeout'] ?? null;
+        // Deadline in unix timestamp with microseconds
+        $deadline = \is_int($timeout) ? \microtime(true) + $timeout / 1_000_000 : null;
+
         do_try:
         ++$attempt;
         try {
             return $handler->handle($context);
         } catch (ServiceClientException $e) {
             $errorCode = StatusCode::tryFrom($e->getCode()) ?? throw $e;
+
             if (!\in_array($errorCode, self::RETRYABLE_ERRORS, true)) {
                 $errorCode === StatusCode::DeadlineExceeded and throw new TimeoutException(
                     $e->getMessage(),
@@ -117,23 +126,29 @@ final class RetryInterceptor implements InterceptorInterface
                 initialInterval: $baseInterval,
             );
 
+            // The next retry must be started before the deadline
+            $deadline === null || \microtime(true) + $wait / 1000 < $deadline or throw new TimeoutException(
+                "Deadline exceeded after $attempt attempts.",
+                StatusCode::DeadlineExceeded->value,
+            );
+
             // wait till the next call
-            $this->usleep($wait);
+            $this->sleep($wait);
         }
         goto do_try;
     }
 
     /**
-     * @param int<0, max> $param Delay in microseconds
+     * @param int<0, max> $param Delay in milliseconds
      */
-    private function usleep(int $param): void
+    private function sleep(int $param): void
     {
         if (\Fiber::getCurrent() === null) {
-            \usleep($param);
+            \usleep($param * 1000);
             return;
         }
 
-        $deadline = \microtime(true) + (float) ($param / 1_000_000);
+        $deadline = \microtime(true) + (float) ($param / 1_000);
 
         while (\microtime(true) < $deadline) {
             \Fiber::suspend();

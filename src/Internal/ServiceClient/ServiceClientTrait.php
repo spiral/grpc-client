@@ -27,8 +27,8 @@ trait ServiceClientTrait
      * @see ServiceClientInterface::__construct()
      */
     public function __construct(
-        private readonly array $connections,
         private readonly HandlerInterface $handler,
+        private readonly array $connections,
     ) {}
 
     /**
@@ -56,7 +56,7 @@ trait ServiceClientTrait
                 $uri,
                 # Message
                 $in,
-                # Deserializer
+                # Deserializer. Note: it's not a callable, it's a legacy
                 [$returnType, 'decode'],
                 # Metadata
                 (array) $ctx->getValue('metadata'),
@@ -81,7 +81,7 @@ trait ServiceClientTrait
         ConnectionInterface $connection,
         string $method,
         Message $in,
-        callable $deserializer,
+        array $deserializer,
         array $metadata,
         array $options,
     ): mixed {

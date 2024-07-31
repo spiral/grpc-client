@@ -6,7 +6,7 @@ namespace Spiral\Grpc\Client\Internal\ServiceClient;
 
 use Spiral\Grpc\Client\Internal\Connection\Connection;
 use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
-use Spiral\Interceptors\PipelineBuilderInterface;
+use Spiral\Interceptors\HandlerInterface;
 
 interface ServiceClientInterface
 {
@@ -14,7 +14,7 @@ interface ServiceClientInterface
      * @param list<ConnectionInterface> $connections Use {@see Connection} to create a connection.
      */
     public function __construct(
-        PipelineBuilderInterface $pipeline,
+        HandlerInterface $pipeline,
         array $connections,
     );
 }

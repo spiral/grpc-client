@@ -17,10 +17,10 @@ class ClientStub extends BaseStub
     public function invoke(
         string $method,
         Message $in,
-        callable $deserializer,
+        array $deserializer,
         array $metadata,
         array $options,
-    ) {
+    ): Message {
         [$result, $status] = $this->_simpleRequest(
             $method,
             $in,
@@ -31,6 +31,7 @@ class ClientStub extends BaseStub
 
         $status->code === StatusCode::Ok->value or throw new ServiceClientException($status);
 
+        \assert($result instanceof Message);
         return $result;
     }
 }
