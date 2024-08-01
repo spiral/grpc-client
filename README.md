@@ -14,7 +14,7 @@ composer require spiral/grpc-client -W
 [![License](https://img.shields.io/packagist/l/spiral/grpc-client.svg?style=flat-square)](LICENSE.md)
 [![Total downloads](https://img.shields.io/packagist/dt/spiral/grpc-client.svg?style=flat-square)](https://packagist.org/packages/spiral/grpc-client/stats)
 
-## Usage
+## Documentation
 
 ### Public API
 
@@ -68,9 +68,9 @@ new GrpcClientConfig(
         new ServiceConfig(
             connections: ConnectionConfig::createInsecure('my-service:9001'),
             interfaces: [
-                \GRPC\MyService\MailSenderInterface::class
-                \GRPC\MyService\BlackListInterface::class
-                \GRPC\MyService\SubscriberInterface::class
+                \GRPC\MyService\MailSenderInterface::class,
+                \GRPC\MyService\BlackListInterface::class,
+                \GRPC\MyService\SubscriberInterface::class,
             ],
         ),
     ],
@@ -113,6 +113,31 @@ for example, `ConnectionsRotationInterceptor`.
 This class represents the configuration of a single connection to the gRPC service.
 It includes credentials and the service address.
 Use static methods to create connection configurations with different types of credentials.
+
+### Usage
+
+After the integration and configuration are ready, you can get the client for the desired service interface
+from the container and call the service methods.
+
+```php
+final class Sender
+{
+    public function __construct(
+        private \GRPC\MyService\MailSenderInterface $mailSender,
+    ) {}
+
+    public function sendMail(string $email, $subject, string $message): bool
+    {
+        $request = (new \GRPC\MyService\SendMailRequest())
+            ->setEmail($email)
+            ->setSubject($subject)
+            ->setMessage($message);
+
+        $response = $this->mailSender->sendMail(new \Spiral\RoadRunner\GRPC\Context([]), $request);
+        return $response->getSuccess();
+    }
+}
+```
 
 ### Interceptors
 
