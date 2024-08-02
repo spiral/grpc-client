@@ -29,6 +29,8 @@ final class SetTimoutInterceptor implements InterceptorInterface
 
     /**
      * @param int<1, max>|null $timeout Timeout in milliseconds.
+     *
+     * @return Autowire<self>
      */
     public static function createConfig(?int $timeout = null): Autowire
     {

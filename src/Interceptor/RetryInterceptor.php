@@ -51,6 +51,8 @@ final class RetryInterceptor implements InterceptorInterface
      *        Default is 100x of {@see $initialInterval}.
      * @param int<0, max> $maximumAttempts Maximum number of attempts.
      * @param float|null $maximumJitterCoefficient Maximum jitter to apply.
+     *
+     * @return Autowire<self>
      */
     public static function createConfig(
         ?int $initialInterval = self::DEFAULT_INITIAL_INTERVAL_MS,

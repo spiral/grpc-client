@@ -146,6 +146,33 @@ Important points when using interceptors in the [long-running](https://spiral.de
 - **Scoped**: interceptors are created in the same Container Scope in which the client is called.
   Accordingly, you can request contextual dependencies in the interceptor's constructor.
 
+When writing your own interceptors, you will likely want to work with gRPC-specific fields
+(options, metadata, input message, etc.).
+Use the `\Spiral\Grpc\Client\Interceptor\Helper` class to get or set the values of these context fields.
+
+```php
+final class AuthContextInterceptor implements InterceptorInterface
+{
+    public function __construct(
+        private readonly AuthContextInterface $authContext,
+    ) {}
+
+    public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
+    {
+        $token = $this->authContext->getToken();
+
+        if ($token === null) {
+            return $handler->handle($context);
+        }
+
+        $metadata = \Spiral\Grpc\Client\Interceptor\Helper::withMetadata($context);
+        $metadata['auth-token'] = [$token];
+
+        return $handler->handle(\Spiral\Grpc\Client\Interceptor\Helper::withMetadata($context, $metadata));
+    }
+}
+```
+
 #### Order of Interceptors
 
 Interceptors are executed in the order in which they are declared in the configuration.
