@@ -13,6 +13,7 @@ use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
 use Spiral\Grpc\Client\Internal\ServiceClient\ClientFactory;
 use Spiral\Interceptors\Handler\CallableHandler;
 use Spiral\Interceptors\InterceptorInterface;
+use Spiral\Interceptors\PipelineBuilder;
 use Spiral\Interceptors\PipelineBuilderInterface;
 
 #[Singleton]
@@ -22,14 +23,15 @@ final class ServiceClientProvider
 
     public function __construct(
         private readonly GrpcClientConfig $config,
-        private readonly PipelineBuilderInterface $pipelineBuilder,
         #[Proxy] private readonly FactoryInterface $factory,
+        private readonly PipelineBuilderInterface $pipelineBuilder = new PipelineBuilder(),
     ) {
+
         // Collect all the services
         $registry = new ServiceRegistry();
         $registry->addServices(...$this->config->services);
 
-        $this->builder = new ClientFactory($registry, $pipelineBuilder);
+        $this->builder = new ClientFactory($registry);
     }
 
     /**
