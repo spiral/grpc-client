@@ -14,6 +14,8 @@ composer require spiral/grpc-client -W
 [![License](https://img.shields.io/packagist/l/spiral/grpc-client.svg?style=flat-square)](LICENSE.md)
 [![Total downloads](https://img.shields.io/packagist/dt/spiral/grpc-client.svg?style=flat-square)](https://packagist.org/packages/spiral/grpc-client/stats)
 
+Note that the package requires [gRPC extension](https://pecl.php.net/package/gRPC) to be installed.
+
 ## Documentation
 
 ### Public API
