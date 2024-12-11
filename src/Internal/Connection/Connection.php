@@ -118,9 +118,9 @@ final class Connection implements ConnectionInterface
         $options = $this->config->isSecure()
             ? [
                 'credentials' => \Grpc\ChannelCredentials::createSsl(
-                    self::loadCert($this->config->rootCerts),
-                    self::loadCert($this->config->privateKey),
-                    self::loadCert($this->config->certChain),
+                    self::loadCert($this->config->tls->rootCerts),
+                    self::loadCert($this->config->tls->privateKey),
+                    self::loadCert($this->config->tls->certChain),
                 ),
             ]
             : ['credentials' => \Grpc\ChannelCredentials::createInsecure()];
