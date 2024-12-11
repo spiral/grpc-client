@@ -90,27 +90,9 @@
         ],
         "cs:diff": "php-cs-fixer fix --dry-run -v --diff",
         "cs:fix": "php-cs-fixer fix -v",
-        "infect": [
-            "@putenv XDEBUG_MODE=coverage",
-            "roave-infection-static-analysis-plugin --configuration=infection.json.dist"
-        ],
-        "infect:ci": [
-            "@putenv XDEBUG_MODE=coverage",
-            "roave-infection-static-analysis-plugin --ansi --configuration=infection.json.dist --logger-github --ignore-msi-with-no-mutations --only-covered"
-        ],
         "psalm": "psalm",
         "psalm:baseline": "psalm --set-baseline=psalm-baseline.xml",
-        "psalm:ci": "psalm --output-format=github --shepherd --show-info=false --stats --threads=4",
-        "refactor": "rector process --config=rector.php",
-        "refactor:ci": "rector process --config=rector.php --dry-run --ansi",
-        "test": [
-            "@putenv XDEBUG_MODE=coverage",
-            "phpunit --color=always"
-        ],
-        "test:arch": "pest --color=always --configuration pest.xml.dist",
-        "test:cc": [
-            "@putenv XDEBUG_MODE=coverage",
-            "phpunit --coverage-clover=runtime/phpunit/logs/clover.xml --color=always"
-        ]
+        "test": "phpunit --color=always",
+        "test:arch": "pest --color=always --configuration pest.xml.dist"
     }
 }
