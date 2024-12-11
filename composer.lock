@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a01ee6706f6e8ad36d1de46139835fc",
+    "content-hash": "f7f5065be7844050329a4b85150d3976",
     "packages": [
         {
             "name": "google/common-protos",
@@ -5719,6 +5719,62 @@
             "time": "2024-11-25T20:19:31+00:00"
         },
         {
+            "name": "spiral/code-style",
+            "version": "v2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spiral/code-style.git",
+                "reference": "e1372d893e3ad8d400733620c99af3418490bed0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spiral/code-style/zipball/e1372d893e3ad8d400733620c99af3418490bed0",
+                "reference": "e1372d893e3ad8d400733620c99af3418490bed0",
+                "shasum": ""
+            },
+            "require": {
+                "friendsofphp/php-cs-fixer": "^3.64",
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5",
+                "spiral/dumper": "^3.3",
+                "vimeo/psalm": "^5.26"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spiral\\CodeStyle\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aleksandr Novikov",
+                    "email": "aleksandr.novikov@spiralscout.com"
+                },
+                {
+                    "name": "Aleksei Gagarin",
+                    "email": "alexey.gagarin@spiralscout.com"
+                }
+            ],
+            "description": "Code style and static analysis tools rulesets collection",
+            "homepage": "https://github.com/spiral/code-style",
+            "support": {
+                "source": "https://github.com/spiral/code-style/tree/v2.2.1"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sponsors/spiral",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-12-07T20:55:03+00:00"
+        },
+        {
             "name": "spiral/config",
             "version": "3.14.7",
             "source": {
@@ -7765,86 +7821,6 @@
                 "source": "https://github.com/vimeo/psalm"
             },
             "time": "2024-09-08T18:53:08+00:00"
-        },
-        {
-            "name": "wayofdev/cs-fixer-config",
-            "version": "v1.5.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/wayofdev/php-cs-fixer-config.git",
-                "reference": "aa0aae244772672f617de6e74d85ff81532f7e82"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/wayofdev/php-cs-fixer-config/zipball/aa0aae244772672f617de6e74d85ff81532f7e82",
-                "reference": "aa0aae244772672f617de6e74d85ff81532f7e82",
-                "shasum": ""
-            },
-            "require": {
-                "friendsofphp/php-cs-fixer": "^3.57",
-                "php": "^8.1"
-            },
-            "require-dev": {
-                "ergebnis/phpunit-slow-test-detector": "^2.14",
-                "pestphp/pest": "^2.34",
-                "phpstan/extension-installer": "^1.3",
-                "phpstan/phpstan": "^1.11",
-                "phpstan/phpstan-deprecation-rules": "^1.2",
-                "phpstan/phpstan-phpunit": "^1.4",
-                "phpstan/phpstan-strict-rules": "^1.6",
-                "phpunit/phpunit": "^10.5",
-                "psalm/plugin-phpunit": "^0.19",
-                "rector/rector": "^1.1",
-                "roave/infection-static-analysis-plugin": "^1.35",
-                "vimeo/psalm": "^5.24"
-            },
-            "type": "library",
-            "extra": {
-                "composer-normalize": {
-                    "indent-size": 4,
-                    "indent-style": "space"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "WayOfDev\\PhpCsFixer\\Config\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Andrij Orlenko",
-                    "email": "the@wayof.dev"
-                }
-            ],
-            "description": "🧹 Adds custom rule-sets to PHP CS Fixer for consistent coding standards.",
-            "homepage": "https://wayof.dev",
-            "keywords": [
-                "code-quality",
-                "code-standards",
-                "code-style",
-                "configuration",
-                "php",
-                "php-cs-fixer",
-                "php-cs-fixer-config",
-                "php-cs-fixer-rules",
-                "static-analysis"
-            ],
-            "support": {
-                "issues": "https://github.com/wayofdev/php-cs-fixer-config/issues",
-                "security": "https://github.com/wayofdev/php-cs-fixer-config/blob/master/.github/SECURITY.md",
-                "source": "https://github.com/wayofdev/php-cs-fixer-config"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/wayofdev",
-                    "type": "github"
-                }
-            ],
-            "time": "2024-06-18T09:13:20+00:00"
         },
         {
             "name": "webmozart/assert",

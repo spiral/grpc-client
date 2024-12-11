@@ -52,8 +52,8 @@
         "pestphp/pest": "^2.34",
         "phpunit/phpunit": "^10.5",
         "spiral/boot": "^3.13",
-        "vimeo/psalm": "^5.11",
-        "wayofdev/cs-fixer-config": "^1.4"
+        "spiral/code-style": "^2.2.0",
+        "vimeo/psalm": "^5.11"
     },
     "suggest": {
         "ext-grpc": "Required to execute gRPC calls"
