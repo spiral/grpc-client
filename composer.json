@@ -45,15 +45,15 @@
         "spiral/tokenizer": "^3.13"
     },
     "require-dev": {
-        "buggregator/trap": "^1.10",
-        "ergebnis/phpunit-slow-test-detector": "^2.14",
-        "friendsofphp/php-cs-fixer": "^3.54",
+        "buggregator/trap": "^1.11.1",
+        "ergebnis/phpunit-slow-test-detector": "^2.17",
+        "friendsofphp/php-cs-fixer": "^3.65",
         "internal/dload": "^1.0.0",
-        "pestphp/pest": "^2.34",
-        "phpunit/phpunit": "^10.5",
-        "spiral/boot": "^3.13",
-        "spiral/code-style": "^2.2.0",
-        "vimeo/psalm": "^5.11"
+        "pestphp/pest": "^2.36",
+        "phpunit/phpunit": "^10.5.36",
+        "spiral/boot": "^3.14.7",
+        "spiral/code-style": "^2.2.1",
+        "vimeo/psalm": "^5.26.1"
     },
     "suggest": {
         "ext-grpc": "Required to execute gRPC calls"

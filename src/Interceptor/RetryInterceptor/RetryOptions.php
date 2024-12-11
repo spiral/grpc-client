@@ -15,13 +15,9 @@ use Spiral\Grpc\Client\Internal\StatusCode;
 final class RetryOptions
 {
     public const DEFAULT_INITIAL_INTERVAL = null;
-
     public const DEFAULT_CONGESTION_INITIAL_INTERVAL = null;
-
     public const DEFAULT_BACKOFF_COEFFICIENT = 2.0;
-
     public const DEFAULT_MAXIMUM_INTERVAL = null;
-
     public const DEFAULT_MAXIMUM_ATTEMPTS = 0;
 
     /**

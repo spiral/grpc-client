@@ -1,5 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.25.0@01a8eb06b9e9cc6cfb6a320bf9fb14331919d505">
+<files psalm-version="5.26.1@d747f6500b38ac4f7dfc5edbcae6e4b637d7add0">
+  <file src="src/Bridge/GrpcClientBootloader.php">
+    <UndefinedInterfaceMethod>
+      <code><![CDATA[get]]></code>
+    </UndefinedInterfaceMethod>
+  </file>
+  <file src="src/Exception/ServiceClientException.php">
+    <MixedArgument>
+      <code><![CDATA[$status->code]]></code>
+      <code><![CDATA[$status->metadata['grpc-status-details-bin'][0]]]></code>
+    </MixedArgument>
+    <MixedArrayAccess>
+      <code><![CDATA[$status->metadata['grpc-status-details-bin']]]></code>
+      <code><![CDATA[$status->metadata['grpc-status-details-bin'][0]]]></code>
+    </MixedArrayAccess>
+    <MixedOperand>
+      <code><![CDATA[$status->details]]></code>
+    </MixedOperand>
+  </file>
+  <file src="src/Interceptor/ConnectionsRotationInterceptor.php">
+    <InvalidReturnType>
+      <code><![CDATA[mixed]]></code>
+    </InvalidReturnType>
+  </file>
+  <file src="src/Interceptor/ExecuteServiceInterceptors.php">
+    <InvalidArgument>
+      <code><![CDATA[$this->autowire($interceptors)]]></code>
+    </InvalidArgument>
+    <MoreSpecificReturnType>
+      <code><![CDATA[\Traversable<Interceptor>]]></code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="src/Interceptor/Helper.php">
+    <InvalidDocblock>
+      <code><![CDATA[public static function getMessage(CallContextInterface $context): object]]></code>
+    </InvalidDocblock>
+    <MixedArrayAccess>
+      <code><![CDATA[$context->getArguments()[3][0]]]></code>
+    </MixedArrayAccess>
+    <MixedArrayAssignment>
+      <code><![CDATA[$args[3][0]]]></code>
+    </MixedArrayAssignment>
+    <MixedInferredReturnType>
+      <code><![CDATA[Connection]]></code>
+      <code><![CDATA[Connection[]]]></code>
+      <code><![CDATA[array<non-empty-string, list<scalar>>]]></code>
+      <code><![CDATA[array<non-empty-string, scalar>]]></code>
+      <code><![CDATA[class-string]]></code>
+      <code><![CDATA[object {@see Message}]]></code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement>
+      <code><![CDATA[$context->getArguments()[0]]]></code>
+      <code><![CDATA[$context->getArguments()[2]]]></code>
+      <code><![CDATA[$context->getArguments()[3][0]]]></code>
+      <code><![CDATA[$context->getArguments()[4]]]></code>
+      <code><![CDATA[$context->getArguments()[5]]]></code>
+      <code><![CDATA[$context->getAttribute(self::ATTR_CONNECTIONS, [])]]></code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/Interceptor/RetryInterceptor.php">
+    <InvalidReturnType>
+      <code><![CDATA[mixed]]></code>
+    </InvalidReturnType>
+    <LessSpecificReturnStatement>
+      <code><![CDATA[(new RetryOptions())
+            ->withInitialInterval($initialInterval)
+            ->withCongestionInitialInterval($congestionInitialInterval)
+            ->withBackoffCoefficient($backoffCoefficient)
+            ->withMaximumInterval($maximumInterval)
+            ->withMaximumAttempts($maximumAttempts)
+            ->withMaximumJitterCoefficient($maximumJitterCoefficient)
+            ->toAutowire()]]></code>
+    </LessSpecificReturnStatement>
+    <MoreSpecificReturnType>
+      <code><![CDATA[Autowire<self>]]></code>
+    </MoreSpecificReturnType>
+  </file>
+  <file src="src/Internal/Connection/ClientStub.php">
+    <MixedArgument>
+      <code><![CDATA[$status]]></code>
+    </MixedArgument>
+    <MixedArgumentTypeCoercion>
+      <code><![CDATA[$deserializer]]></code>
+    </MixedArgumentTypeCoercion>
+    <MixedPropertyFetch>
+      <code><![CDATA[$status->code]]></code>
+    </MixedPropertyFetch>
+  </file>
+  <file src="src/Internal/Connection/Connection.php">
+    <PossiblyNullArgument>
+      <code><![CDATA[self::loadCert($this->config->tls->certChain)]]></code>
+      <code><![CDATA[self::loadCert($this->config->tls->privateKey)]]></code>
+      <code><![CDATA[self::loadCert($this->config->tls->rootCerts)]]></code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Internal/ServiceClient/ClassGenerator.php">
+    <MixedAssignment>
+      <code><![CDATA[$returnType]]></code>
+    </MixedAssignment>
+    <PossiblyFalseArgument>
+      <code><![CDATA[\strrpos($interface, '\\')]]></code>
+    </PossiblyFalseArgument>
+    <PossiblyFalseOperand>
+      <code><![CDATA[\strpos($string, '=')]]></code>
+    </PossiblyFalseOperand>
+    <UndefinedMethod>
+      <code><![CDATA[getName]]></code>
+    </UndefinedMethod>
+  </file>
+  <file src="src/Internal/ServiceClient/ClientFactory.php">
+    <InvalidReturnStatement>
+      <code><![CDATA[new $class($handler, $connections)]]></code>
+    </InvalidReturnStatement>
+    <InvalidReturnType>
+      <code><![CDATA[T&ServiceClientInterface]]></code>
+    </InvalidReturnType>
+  </file>
   <file src="src/stub.php">
     <UnrecognizedStatement>
       <code><![CDATA[interface ServiceInterface {}]]></code>
