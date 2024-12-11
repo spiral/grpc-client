@@ -68,7 +68,7 @@ new GrpcClientConfig(
     ],
     services: [
         new ServiceConfig(
-            connections: ConnectionConfig::createInsecure('my-service:9001'),
+            connections: new ConnectionConfig('my-service:9001'),
             interfaces: [
                 \GRPC\MyService\MailSenderInterface::class,
                 \GRPC\MyService\BlackListInterface::class,
@@ -114,7 +114,18 @@ for example, `ConnectionsRotationInterceptor`.
 
 This class represents the configuration of a single connection to the gRPC service.
 It includes credentials and the service address.
-Use static methods to create connection configurations with different types of credentials.
+
+To create a secure connection, use the `TlsConfig` class.
+
+```php
+new ConnectionConfig(
+    address: 'my-service:9001',
+    tls: new TlsConfig(
+        privateKey: '/my-project.key',
+        certChain: '/my-project.pem',
+    ),
+),
+```
 
 ### Usage
 

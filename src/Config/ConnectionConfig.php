@@ -6,37 +6,45 @@ namespace Spiral\Grpc\Client\Config;
 
 final class ConnectionConfig
 {
-    private function __construct(
+    /**
+     * @param non-empty-string $address Address of the Temporal service.
+     * @param TlsConfig|null $tls TLS configuration for the connection.
+     *        If null provided, the connection is insecure.
+     */
+    public function __construct(
         public readonly string $address,
-        public readonly bool $secure = false,
-        public readonly ?string $rootCerts = null,
-        public readonly ?string $privateKey = null,
-        public readonly ?string $certChain = null,
+        public readonly ?TlsConfig $tls = null,
     ) {}
 
     /**
+     * Set the TLS configuration for the connection.
+     *
      * @param non-empty-string|null $rootCerts Root certificates string or file in PEM format.
      *         If null provided, default gRPC root certificates are used.
      * @param non-empty-string|null $privateKey Client private key string or file in PEM format.
      * @param non-empty-string|null $certChain Client certificate chain string or file in PEM format.
+     * @param non-empty-string|null $serverName Server name override for TLS verification.
      */
-    public static function createSecure(
-        string $address,
+    public function withTls(
         ?string $rootCerts = null,
         ?string $privateKey = null,
         ?string $certChain = null,
+        ?string $serverName = null,
     ): self {
-        return new self($address, true, $rootCerts, $privateKey, $certChain);
+        return new self(
+            $this->address,
+            new TlsConfig($rootCerts, $privateKey, $certChain, $serverName),
+        );
     }
 
-    public static function createInsecure(
-        string $address,
-    ): self {
-        return new self($address);
-    }
-
+    /**
+     * Check if the connection is secure.
+     *
+     * @psalm-assert-if-true TlsConfig $this->tls
+     * @psalm-assert-if-false null $this->tls
+     */
     public function isSecure(): bool
     {
-        return $this->secure;
+        return $this->tls !== null;
     }
 }

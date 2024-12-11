@@ -68,14 +68,16 @@ final class ServiceClientProvider
     private function makePipeline(): PipelineBuilderInterface
     {
         // Prepare common interceptors
-        /** @var InterceptorInterface[] $list */
+        /** @var list<InterceptorInterface> $list */
         $list = [];
         foreach ($this->config->interceptors as $interceptor) {
-            $list[] = match (true) {
+            $i = match (true) {
                 \is_string($interceptor) => $this->factory->make($interceptor),
                 $interceptor instanceof Autowire => $interceptor->resolve($this->factory),
                 default => $interceptor,
             };
+            \assert($i instanceof InterceptorInterface);
+            $list[] = $i;
         }
 
         return $this->pipelineBuilder->withInterceptors(...$list);

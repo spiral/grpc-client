@@ -30,9 +30,7 @@ final class RetryInterceptor implements InterceptorInterface
         StatusCode::Unknown,
         StatusCode::Aborted,
     ];
-
     private const DEFAULT_INITIAL_INTERVAL_MS = 50;
-
     private const DEFAULT_CONGESTION_INITIAL_INTERVAL_MS = 1000;
 
     public function __construct(
