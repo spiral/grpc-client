@@ -3,5 +3,6 @@
 /runtime/
 /vendor/
 /.env
+/protoc*
 *.log
 *.exe
