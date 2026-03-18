@@ -86,6 +86,7 @@
         "post-update-cmd": [
             "dload get --no-interaction"
         ],
+        "proto:generate": "php tests/generate-proto.php",
         "cs:diff": "php-cs-fixer fix --dry-run -v --diff",
         "cs:fix": "php-cs-fixer fix -v",
         "psalm": "psalm",
