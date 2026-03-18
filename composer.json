@@ -91,7 +91,7 @@
         "cs:fix": "php-cs-fixer fix -v",
         "psalm": "psalm",
         "psalm:baseline": "psalm --set-baseline=psalm-baseline.xml",
-        "test": "testo --color=always",
-        "test:ci": "testo --color=always"
+        "test": "testo",
+        "test:ci": "testo"
     }
 }

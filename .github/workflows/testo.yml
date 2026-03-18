@@ -5,10 +5,10 @@ on:
             - master
             - '*.*'
 
-name: phpunit
+name: testo
 
 jobs:
-    phpunit:
+    testo:
         uses: spiral/gh-actions/.github/workflows/testo.yml@master
         with:
             extensions: sockets, grpc
