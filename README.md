@@ -139,7 +139,7 @@ final class Sender
         private \GRPC\MyService\MailSenderInterface $mailSender,
     ) {}
 
-    public function sendMail(string $email, $subject, string $message): bool
+    public function __invoke(string $email, $subject, string $message): bool
     {
         $request = (new \GRPC\MyService\SendMailRequest())
             ->setEmail($email)
