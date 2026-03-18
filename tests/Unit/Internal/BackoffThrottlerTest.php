@@ -4,18 +4,21 @@ declare(strict_types=1);
 
 namespace Internal;
 
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
 use Spiral\Grpc\Client\Internal\BackoffThrottler;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Expect;
+use Testo\Test;
 
-final class BackoffThrottlerTest extends TestCase
+#[Test]
+final class BackoffThrottlerTest
 {
     public static function provideConstructorInvalidArguments(): iterable
     {
-        yield 'maxInterval is 0' => [0, 0.1, 2.0, '$maxInterval must be greater than 0.'];
-        yield 'maxJitterCoefficient is negative' => [1, -0.1, 2.0, '$jitterCoefficient must be in the range [0.0, 1.0).'];
-        yield 'maxJitterCoefficient is 1' => [1, 1.0, 2.0, '$jitterCoefficient must be in the range [0.0, 1.0).'];
-        yield 'backoffCoefficient is less than 1' => [1, 0.1, 0.9, '$backoffCoefficient must be greater than 1.'];
+        yield 'maxInterval is 0' => [0, 0.1, 2.0];
+        yield 'maxJitterCoefficient is negative' => [1, -0.1, 2.0];
+        yield 'maxJitterCoefficient is 1' => [1, 1.0, 2.0];
+        yield 'backoffCoefficient is less than 1' => [1, 0.1, 0.9];
     }
 
     public static function provideCalculatorData(): iterable
@@ -35,35 +38,34 @@ final class BackoffThrottlerTest extends TestCase
     }
 
     #[DataProvider('provideConstructorInvalidArguments')]
-    public function testInvalidArguments(
+    public function invalidArguments(
         int $maxInterval,
         float $maxJitterCoefficient,
         float $backoffCoefficient,
-        ?string $exceptionMessage = null,
     ): void {
-        $exceptionMessage === null or $this->expectExceptionMessage($exceptionMessage);
+        Expect::exception(\InvalidArgumentException::class);
 
         new BackoffThrottler($maxInterval, $maxJitterCoefficient, $backoffCoefficient);
     }
 
     #[DataProvider('provideCalculatorData')]
-    public function testCalculateSleepTime(int $expected, int $fails, int $interval): void
+    public function calculateSleepTime(int $expected, int $fails, int $interval): void
     {
         $throttler = new BackoffThrottler(300_000, 0.0, 3.0);
 
-        self::assertSame($expected, $throttler->calculateSleepTime($fails, $interval));
+        Assert::same($throttler->calculateSleepTime($fails, $interval), $expected);
     }
 
     #[DataProvider('provideCalculatorInvalidArgs')]
-    public function testCalculateSleepTimeInvalidArgs(int $fails, int $interval): void
+    public function calculateSleepTimeInvalidArgs(int $fails, int $interval): void
     {
         $throttler = new BackoffThrottler(300_000, 0.0, 3.0);
 
-        $this->expectException(\InvalidArgumentException::class);
+        Expect::exception(\InvalidArgumentException::class);
         $throttler->calculateSleepTime($fails, $interval);
     }
 
-    public function testCalculateSleepTimeWithJitter(): void
+    public function calculateSleepTimeWithJitter(): void
     {
         $throttler = new BackoffThrottler(300_000, 0.2, 2.0);
 
@@ -74,10 +76,9 @@ final class BackoffThrottlerTest extends TestCase
             $sleep = $throttler->calculateSleepTime(1, 1000);
             $notSame = $notSame || $sleep !== $sleepTime;
 
-            self::assertGreaterThanOrEqual(800, $sleep);
-            self::assertLessThanOrEqual(1200, $sleep);
+            Assert::int($sleep)->greaterThanOrEqual(800)->lessThanOrEqual(1200);
         }
 
-        self::assertTrue($notSame);
+        Assert::true($notSame);
     }
 }

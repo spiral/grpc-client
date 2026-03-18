@@ -1,7 +1,16 @@
 <?xml version="1.0"?>
-<dload>
+<dload xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="vendor/internal/dload/dload.xsd"
+>
     <actions>
         <download software="protoc-gen-php-grpc" version="^2024.2"/>
         <download software="protoc"/>
+        <download software="grpcbin"/>
     </actions>
+    <registry>
+        <software name="gRPCBin" alias="grpcbin">
+            <repository uri="moul/grpcbin" asset-pattern="/^grpcbin_.*/"/>
+            <binary name="grpcbin"/>
+        </software>
+    </registry>
 </dload>
