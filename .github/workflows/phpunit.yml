@@ -9,10 +9,10 @@ name: phpunit
 
 jobs:
     phpunit:
-        uses: spiral/gh-actions/.github/workflows/phpunit.yml@master
+        uses: spiral/gh-actions/.github/workflows/testo.yml@master
         with:
             extensions: sockets, grpc
-            os: >-
-                ['ubuntu-latest']
-            stability: >-
-                ['prefer-stable']
+            os: '["ubuntu-latest"]'
+            php: '["8.2","8.3","8.4","8.5"]'
+            run: 'composer test:ci'
+

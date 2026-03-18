@@ -92,6 +92,6 @@
         "psalm": "psalm",
         "psalm:baseline": "psalm --set-baseline=psalm-baseline.xml",
         "test": "testo --color=always",
-        "test:arch": "pest --color=always --configuration pest.xml.dist"
+        "test:ci": "testo --color=always"
     }
 }
