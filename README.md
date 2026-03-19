@@ -38,11 +38,83 @@ The package provides the following parts of the API:
 Add the `\Spiral\Grpc\Client\Bridge\GrpcClientBootloader` bootloader to the list of bootloaders
 in the application configuration (usually it is `Kernel.php`).
 
+#### Standalone Usage
+
+The `GrpcClient` class provides a lightweight, Guzzle-like API for making gRPC calls
+without any framework or DI container:
+
+```php
+use Spiral\Grpc\Client\GrpcClient;
+
+// Minimal — one endpoint, call service methods right away
+$client = GrpcClient::create('localhost:9001');
+$mailSender = $client->service(\GRPC\MyService\MailSenderInterface::class);
+$mailSender->sendMail($ctx, $request);
+```
+
+Add interceptors using the convenient `createConfig()` factories:
+
+```php
+use Spiral\Grpc\Client\GrpcClient;
+use Spiral\Grpc\Client\Interceptor\SetTimeoutInterceptor;
+use Spiral\Grpc\Client\Interceptor\RetryInterceptor;
+
+$client = GrpcClient::create('localhost:9001')
+    ->withInterceptors([
+        SetTimeoutInterceptor::createConfig(10_000),
+        RetryInterceptor::createConfig(maximumAttempts: 3),
+    ]);
+```
+
+Multiple connections for failover:
+
+```php
+$client = GrpcClient::create(['localhost:9001', 'localhost:9002']);
+```
+
+`ConnectionConfig` for TLS:
+
+```php
+use Spiral\Grpc\Client\Config\ConnectionConfig;
+use Spiral\Grpc\Client\Config\TlsConfig;
+
+$client = GrpcClient::create(
+    new ConnectionConfig('localhost:9001', tls: new TlsConfig(
+        certChain: '/my-project.pem',
+        privateKey: '/my-project.key',
+    )),
+);
+```
+
+With a factory (e.g. Spiral's container) to resolve class-string interceptors via DI:
+
+```php
+$client = GrpcClient::create('localhost:9001')
+    ->withFactory($factory);
+```
+
+The `with*` methods are immutable — each returns a new instance, so you can safely
+derive pre-configured clients:
+
+```php
+$base = GrpcClient::create('localhost:9001')
+    ->withInterceptors([SetTimeoutInterceptor::createConfig(5_000)]);
+
+$withRetry = $base->withInterceptors([
+    SetTimeoutInterceptor::createConfig(5_000),
+    RetryInterceptor::createConfig(maximumAttempts: 3),
+]);
+```
+
+> [!NOTE]
+> `GrpcClient` does not support per-service interceptors. If you need that,
+> use `ServiceClientProvider` with the full `GrpcClientConfig` / `ExecuteServiceInterceptors` setup.
+
 #### Other Frameworks
 
-If you are using this package outside the [Spiral](https://spiral.dev/) framework,
-you need to figure out how to use the `\Spiral\Grpc\Client\ServiceClientProvider` provider
-to get ready-to-use gRPC clients.
+If you are using this package with another framework,
+you can use `\Spiral\Grpc\Client\ServiceClientProvider` with a `GrpcClientConfig`
+to get ready-to-use gRPC clients, or use the standalone `GrpcClient` described above.
 
 ### Configuration DTOs
 
@@ -52,13 +124,13 @@ Now let's consider a configuration example:
 use Spiral\Grpc\Client\Config\GrpcClientConfig;
 use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Config\ConnectionConfig;
-use Spiral\Grpc\Client\Interceptor\SetTimoutInterceptor;
+use Spiral\Grpc\Client\Interceptor\SetTimeoutInterceptor;
 use Spiral\Grpc\Client\Interceptor\RetryInterceptor;
 use Spiral\Grpc\Client\Interceptor\ExecuteServiceInterceptors;
 
 new GrpcClientConfig(
     interceptors: [
-        SetTimoutInterceptor::createConfig(10_000), // 10 seconds
+        SetTimeoutInterceptor::createConfig(10_000), // 10 seconds
         RetryInterceptor::createConfig(
             maximumAttempts: 3,
             initialInterval: 100, // 0.1 seconds

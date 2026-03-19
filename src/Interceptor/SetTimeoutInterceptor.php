@@ -14,7 +14,7 @@ use Spiral\Interceptors\InterceptorInterface;
  *
  * Use {@see RetryInterceptor::createConfig()} to create a config DTO in a configuration file.
  */
-final class SetTimoutInterceptor implements InterceptorInterface
+final class SetTimeoutInterceptor implements InterceptorInterface
 {
     /**
      * @param int<1, max>|null $timeout Timeout in milliseconds.

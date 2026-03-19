@@ -18,7 +18,7 @@ use Spiral\Interceptors\InterceptorInterface;
  * Apply retry logic to the gRPC call.
  *
  * If the timeout is defined in the context before the interceptor, it will be used as a deadline between retries.
- * To set the timeout, use {@see SetTimoutInterceptor}.
+ * To set the timeout, use {@see SetTimeoutInterceptor}.
  *
  * Use {@see RetryInterceptor::createConfig()} to create a config DTO in a configuration file.
  */
