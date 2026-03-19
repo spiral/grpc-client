@@ -41,6 +41,7 @@ final class SetTimeoutInterceptor implements InterceptorInterface
         return new Autowire(self::class, [$timeout]);
     }
 
+    #[\Override]
     public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
     {
         $options = Helper::getOptions($context);
