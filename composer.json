@@ -42,7 +42,8 @@
         "psr/container": "^2.0",
         "spiral/core": "^3.14",
         "spiral/hmvc": "^3.14",
-        "spiral/tokenizer": "^3.13"
+        "spiral/tokenizer": "^3.13",
+        "symfony/polyfill-php82": "*"
     },
     "require-dev": {
         "buggregator/trap": "^1.11.1",

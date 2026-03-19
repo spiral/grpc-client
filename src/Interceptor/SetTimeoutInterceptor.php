@@ -14,7 +14,7 @@ use Spiral\Interceptors\InterceptorInterface;
  *
  * Use {@see RetryInterceptor::createConfig()} to create a config DTO in a configuration file.
  */
-final class SetTimoutInterceptor implements InterceptorInterface
+final class SetTimeoutInterceptor implements InterceptorInterface
 {
     /**
      * @param int<1, max>|null $timeout Timeout in milliseconds.
@@ -41,6 +41,7 @@ final class SetTimoutInterceptor implements InterceptorInterface
         return new Autowire(self::class, [$timeout]);
     }
 
+    #[\Override]
     public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
     {
         $options = Helper::getOptions($context);

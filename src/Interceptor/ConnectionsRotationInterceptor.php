@@ -16,6 +16,7 @@ use Spiral\Interceptors\InterceptorInterface;
  */
 final class ConnectionsRotationInterceptor implements InterceptorInterface
 {
+    #[\Override]
     public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
     {
         $connections = Helper::getConnections($context);

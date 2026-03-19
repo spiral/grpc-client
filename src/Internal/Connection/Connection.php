@@ -25,17 +25,20 @@ final class Connection implements ConnectionInterface
         $this->initClient();
     }
 
+    #[\Override]
     public function getStub(): ClientStub
     {
         $this->initClient();
         return $this->stub;
     }
 
+    #[\Override]
     public function isConnected(): bool
     {
         return ConnectionState::from($this->stub->getConnectivityState(false)) === ConnectionState::Ready;
     }
 
+    #[\Override]
     public function connect(float $timeout): void
     {
         $deadline = \microtime(true) + $timeout;
@@ -75,6 +78,7 @@ final class Connection implements ConnectionInterface
         );
     }
 
+    #[\Override]
     public function disconnect(): void
     {
         if ($this->closed) {

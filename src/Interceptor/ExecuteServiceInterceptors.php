@@ -24,6 +24,7 @@ final class ExecuteServiceInterceptors implements Interceptor
         private readonly PipelineBuilderInterface $pipelineBuilder,
     ) {}
 
+    #[\Override]
     public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
     {
         // Get current connection

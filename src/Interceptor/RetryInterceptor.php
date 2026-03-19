@@ -18,7 +18,7 @@ use Spiral\Interceptors\InterceptorInterface;
  * Apply retry logic to the gRPC call.
  *
  * If the timeout is defined in the context before the interceptor, it will be used as a deadline between retries.
- * To set the timeout, use {@see SetTimoutInterceptor}.
+ * To set the timeout, use {@see SetTimeoutInterceptor}.
  *
  * Use {@see RetryInterceptor::createConfig()} to create a config DTO in a configuration file.
  */
@@ -70,6 +70,7 @@ final class RetryInterceptor implements InterceptorInterface
             ->toAutowire();
     }
 
+    #[\Override]
     public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
     {
         $attempt = 0;
@@ -80,7 +81,7 @@ final class RetryInterceptor implements InterceptorInterface
         // Use deadline if timeout was defined before the interceptor
         $timeout = Helper::getOptions($context)['timeout'] ?? null;
         // Deadline in unix timestamp with microseconds
-        $deadline = \is_int($timeout) ? \microtime(true) + $timeout / 1_000_000 : null;
+        $deadline = \is_int($timeout) ? \microtime(true) + (float) $timeout / 1_000_000.0 : null;
 
         do_try:
         ++$attempt;
@@ -127,7 +128,7 @@ final class RetryInterceptor implements InterceptorInterface
             );
 
             // The next retry must be started before the deadline
-            $deadline === null || \microtime(true) + $wait / 1000 < $deadline or throw new TimeoutException(
+            $deadline === null || \microtime(true) + (float) $wait / 1000.0 < $deadline or throw new TimeoutException(
                 "Deadline exceeded after $attempt attempts.",
                 StatusCode::DeadlineExceeded->value,
             );

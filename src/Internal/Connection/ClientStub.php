@@ -12,7 +12,7 @@ use Spiral\Grpc\Client\Internal\StatusCode;
 /**
  * @internal
  */
-class ClientStub extends BaseStub
+final class ClientStub extends BaseStub
 {
     public function invoke(
         string $method,

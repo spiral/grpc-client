@@ -8,7 +8,7 @@ use Google\Protobuf\Any;
 use Google\Protobuf\Internal\RepeatedField;
 use Google\Rpc\Status;
 
-class ServiceClientException extends \RuntimeException implements GrpcClientException
+final class ServiceClientException extends \RuntimeException implements GrpcClientException
 {
     private Status $status;
 

@@ -8,7 +8,7 @@ use Spiral\Boot\Bootloader\Bootloader;
 use Spiral\Core\BinderInterface;
 use Spiral\Grpc\Client\ServiceClientProvider;
 
-class GrpcClientBootloader extends Bootloader
+final class GrpcClientBootloader extends Bootloader
 {
     public function boot(BinderInterface $binder): void
     {
