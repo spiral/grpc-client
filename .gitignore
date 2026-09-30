@@ -6,3 +6,4 @@
 /protoc*
 *.log
 *.exe
+/composer.lock

@@ -1,18 +1,72 @@
-on:
-    pull_request: null
-    push:
-        branches:
-            - master
-            - '*.*'
-
 name: testo
 
-jobs:
-    testo:
-        uses: spiral/gh-actions/.github/workflows/testo.yml@master
-        with:
-            extensions: sockets, grpc
-            os: '["ubuntu-latest"]'
-            php: '["8.2","8.3","8.4","8.5"]'
-            run: 'composer test:ci'
+on:
+  pull_request:
+    paths: &paths
+      - 'src/**'
+      - 'tests/**'
+      - 'testo.php'
+      - 'composer.json'
+      - 'dload.xml'
+      - '.github/workflows/testo.yml'
+  push:
+    branches: ['master', '*.*']
+    paths: *paths
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DLOAD_CACHE_DIR: ${{ github.workspace }}/runtime/dload-cache
+
+jobs:
+  testo:
+    name: PHP ${{ matrix.php }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        php:
+          - '8.2'
+          - '8.3'
+          - '8.4'
+          - '8.5'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: sockets, grpc
+          ini-values: memory_limit=-1
+          coverage: pcov
+
+      # `composer update` fetches protoc, protoc-gen-php-grpc and grpcbin through dload (post-update-cmd),
+      # so the registry has to be in place before the dependencies are installed.
+      # A GitHub cache entry is immutable, so the run_id keeps the key missing and restore-keys reads the newest.
+      - name: Restore the dload version registry
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: runtime/dload-cache
+          key: dload-registry-${{ github.run_id }}
+          restore-keys: dload-registry-
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f # 3.2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run tests
+        run: composer test:ci
