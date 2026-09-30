@@ -1,0 +1,11 @@
+{
+    "$schema": "tools/infection/vendor/infection/infection/resources/schema.json",
+    "source": {
+        "directories": [
+            "src"
+        ]
+    },
+    "testFramework": "testo",
+    "tmpDir": "runtime",
+    "timeout": 10
+}

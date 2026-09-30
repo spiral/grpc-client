@@ -7,3 +7,8 @@
 *.log
 *.exe
 /composer.lock
+/tools/*/vendor/
+/tools/*/composer.lock
+/tools/*/.agents/
+/tools/*/.claude/
+/tools/*/skills.json

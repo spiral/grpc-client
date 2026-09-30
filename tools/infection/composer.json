@@ -1,0 +1,15 @@
+{
+    "require": {
+        "infection/infection": "^0.35",
+        "roxblnfk/unpoly": "^1.8.2",
+        "testo/bridge-infection": "^0.1.9"
+    },
+    "config": {
+        "allow-plugins": {
+            "infection/extension-installer": true
+        },
+        "platform": {
+            "php": "8.3.0"
+        }
+    }
+}
