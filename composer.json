@@ -46,13 +46,13 @@
         "symfony/polyfill-php82": "*"
     },
     "require-dev": {
-        "buggregator/trap": "^1.11.1",
-        "internal/dload": "^1.0.0",
+        "buggregator/trap": "^1.16.1",
+        "internal/dload": "^1.16.5",
         "roxblnfk/unpoly": "^1.8.1",
-        "spiral/boot": "^3.14.7",
-        "spiral/code-style": "^2.2.2",
-        "testo/testo": "^0.10.0",
-        "vimeo/psalm": "^6"
+        "spiral/boot": "^3.17.2",
+        "spiral/code-style": "^2.3.1",
+        "testo/testo": "^0.10.54",
+        "vimeo/psalm": "^6 || ^7"
     },
     "suggest": {
         "ext-grpc": "Required to execute gRPC calls"
