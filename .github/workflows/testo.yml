@@ -50,7 +50,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: sockets, grpc
-          ini-values: memory_limit=-1
+          ini-values: memory_limit=-1, zend.assertions=1
           coverage: pcov
 
       # `composer update` fetches protoc, protoc-gen-php-grpc and grpcbin through dload (post-update-cmd),

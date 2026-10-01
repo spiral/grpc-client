@@ -8,6 +8,7 @@ use Spiral\Grpc\Client\Interceptor\RetryInterceptor;
 use Spiral\Grpc\Client\Interceptor\RetryInterceptor\RetryOptions;
 use Testo\Assert;
 use Testo\Codecov\Covers;
+use Testo\Core\Exception\SkipTest;
 use Testo\Data\DataProvider;
 use Testo\Expect;
 use Testo\Test;
@@ -50,19 +51,17 @@ final class RetryOptionsTest
 
     public static function provideInvalidValues(): iterable
     {
-        yield 'initialInterval negative' => ['withInitialInterval', -1, \InvalidArgumentException::class];
-        yield 'congestionInitialInterval negative' => [
-            'withCongestionInitialInterval', -1, \InvalidArgumentException::class,
-        ];
-        yield 'backoffCoefficient below one' => ['withBackoffCoefficient', 0.5, \AssertionError::class];
-        yield 'maximumInterval negative' => ['withMaximumInterval', -1, \AssertionError::class];
-        yield 'maximumAttempts negative' => ['withMaximumAttempts', -1, \AssertionError::class];
-        yield 'maximumJitterCoefficient negative' => [
-            'withMaximumJitterCoefficient', -0.1, \InvalidArgumentException::class,
-        ];
-        yield 'maximumJitterCoefficient one' => [
-            'withMaximumJitterCoefficient', 1.0, \InvalidArgumentException::class,
-        ];
+        yield 'initialInterval negative' => ['withInitialInterval', -1];
+        yield 'congestionInitialInterval negative' => ['withCongestionInitialInterval', -1];
+        yield 'maximumJitterCoefficient negative' => ['withMaximumJitterCoefficient', -0.1];
+        yield 'maximumJitterCoefficient one' => ['withMaximumJitterCoefficient', 1.0];
+    }
+
+    public static function provideAssertViolatingValues(): iterable
+    {
+        yield 'backoffCoefficient below one' => ['withBackoffCoefficient', 0.5];
+        yield 'maximumInterval negative' => ['withMaximumInterval', -1];
+        yield 'maximumAttempts negative' => ['withMaximumAttempts', -1];
     }
 
     public function toAutowirePassesItselfToInterceptor(): void
@@ -93,15 +92,24 @@ final class RetryOptionsTest
     }
 
     /**
-     * The `\assert()`-guarded setters raise {@see \AssertionError} only while `zend.assertions=1`.
-     *
      * @param non-empty-string $method
-     * @param class-string<\Throwable> $exception
      */
     #[DataProvider('provideInvalidValues')]
-    public function withInvalidValueFails(string $method, mixed $value, string $exception): never
+    public function withInvalidValueFails(string $method, mixed $value): never
     {
-        Expect::exception($exception);
+        Expect::exception(\InvalidArgumentException::class);
+
+        (new RetryOptions())->{$method}($value);
+    }
+
+    /**
+     * @param non-empty-string $method
+     */
+    #[DataProvider('provideAssertViolatingValues')]
+    public function withAssertViolatingValueFails(string $method, mixed $value): never
+    {
+        \ini_get('zend.assertions') === '1' or throw new SkipTest('zend.assertions is disabled');
+        Expect::exception(\AssertionError::class);
 
         (new RetryOptions())->{$method}($value);
     }
