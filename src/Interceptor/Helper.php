@@ -46,7 +46,7 @@ final class Helper
      */
     public static function getMessage(CallContextInterface $context): object
     {
-        return $context->getArguments()[4];
+        return $context->getArguments()[2];
     }
 
     /**
@@ -66,7 +66,7 @@ final class Helper
      */
     public static function getMetadata(CallContextInterface $context): array
     {
-        return $context->getArguments()[2];
+        return $context->getArguments()[4];
     }
 
     /**
