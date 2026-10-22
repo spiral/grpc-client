@@ -10,9 +10,9 @@ use Spiral\Interceptors\HandlerInterface;
 use Spiral\Interceptors\InterceptorInterface;
 
 /**
- * Apply retry logic to the gRPC call.
+ * Set the timeout of the gRPC call.
  *
- * Use {@see RetryInterceptor::createConfig()} to create a config DTO in a configuration file.
+ * Use {@see SetTimeoutInterceptor::createConfig()} to create a config DTO in a configuration file.
  */
 final class SetTimeoutInterceptor implements InterceptorInterface
 {
@@ -22,7 +22,7 @@ final class SetTimeoutInterceptor implements InterceptorInterface
     public function __construct(
         private readonly ?int $timeout = null,
     ) {
-        $timeout === null || $timeout > 1 or throw new \InvalidArgumentException(
+        $timeout === null || $timeout > 0 or throw new \InvalidArgumentException(
             'Timeout must be greater than 0 or `null`.',
         );
     }
@@ -34,7 +34,7 @@ final class SetTimeoutInterceptor implements InterceptorInterface
      */
     public static function createConfig(?int $timeout = null): Autowire
     {
-        $timeout === null || $timeout > 1 or throw new \InvalidArgumentException(
+        $timeout === null || $timeout > 0 or throw new \InvalidArgumentException(
             'Timeout must be greater than 0 or `null`.',
         );
 
