@@ -228,7 +228,7 @@ class DummyMessage extends \Google\Protobuf\Internal\Message
      */
     public function setFEnum($var)
     {
-        GPBUtil::checkEnum($var, \Spiral\Grpc\Client\Tests\Generated\Grpcbin\DummyMessage\Enum::class);
+        GPBUtil::checkEnum($var, DummyMessage\Enum::class);
         $this->f_enum = $var;
 
         return $this;
@@ -250,7 +250,7 @@ class DummyMessage extends \Google\Protobuf\Internal\Message
      */
     public function setFEnums($var)
     {
-        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::ENUM, \Spiral\Grpc\Client\Tests\Generated\Grpcbin\DummyMessage\Enum::class);
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::ENUM, DummyMessage\Enum::class);
         $this->f_enums = $arr;
 
         return $this;
@@ -258,7 +258,7 @@ class DummyMessage extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>.grpcbin.DummyMessage.Sub f_sub = 7;</code>
-     * @return \Spiral\Grpc\Client\Tests\Generated\Grpcbin\DummyMessage\Sub|null
+     * @return DummyMessage\Sub|null
      */
     public function getFSub()
     {
@@ -277,12 +277,12 @@ class DummyMessage extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>.grpcbin.DummyMessage.Sub f_sub = 7;</code>
-     * @param \Spiral\Grpc\Client\Tests\Generated\Grpcbin\DummyMessage\Sub $var
+     * @param DummyMessage\Sub $var
      * @return $this
      */
     public function setFSub($var)
     {
-        GPBUtil::checkMessage($var, \Spiral\Grpc\Client\Tests\Generated\Grpcbin\DummyMessage\Sub::class);
+        GPBUtil::checkMessage($var, DummyMessage\Sub::class);
         $this->f_sub = $var;
 
         return $this;
@@ -299,12 +299,12 @@ class DummyMessage extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>repeated .grpcbin.DummyMessage.Sub f_subs = 8;</code>
-     * @param array<\Spiral\Grpc\Client\Tests\Generated\Grpcbin\DummyMessage\Sub>|\Google\Protobuf\Internal\RepeatedField $var
+     * @param array<DummyMessage\Sub>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
     public function setFSubs($var)
     {
-        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Spiral\Grpc\Client\Tests\Generated\Grpcbin\DummyMessage\Sub::class);
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, DummyMessage\Sub::class);
         $this->f_subs = $arr;
 
         return $this;

@@ -73,12 +73,12 @@ class IndexReply extends \Google\Protobuf\Internal\Message
 
     /**
      * Generated from protobuf field <code>repeated .grpcbin.IndexReply.Endpoint endpoints = 2;</code>
-     * @param array<\Spiral\Grpc\Client\Tests\Generated\Grpcbin\IndexReply\Endpoint>|\Google\Protobuf\Internal\RepeatedField $var
+     * @param array<IndexReply\Endpoint>|\Google\Protobuf\Internal\RepeatedField $var
      * @return $this
      */
     public function setEndpoints($var)
     {
-        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Spiral\Grpc\Client\Tests\Generated\Grpcbin\IndexReply\Endpoint::class);
+        $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, IndexReply\Endpoint::class);
         $this->endpoints = $arr;
 
         return $this;

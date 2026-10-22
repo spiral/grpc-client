@@ -50,7 +50,7 @@ class HeadersMessage extends \Google\Protobuf\Internal\Message
      */
     public function setMetadata($var)
     {
-        $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::MESSAGE, \Spiral\Grpc\Client\Tests\Generated\Grpcbin\HeadersMessage\Values::class);
+        $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::MESSAGE, HeadersMessage\Values::class);
         $this->Metadata = $arr;
 
         return $this;
