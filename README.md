@@ -1,9 +1,29 @@
-# gRPC Client
+<p align="center">
+    <a href="https://spiral.dev"><img alt="Spiral" src="https://raw.githubusercontent.com/spiral/.github/main/logo.svg" style="width: 6in; display: block"></a>
+</p>
+
+<p align="center">gRPC client for PHP with interceptors, retries and connection failover</p>
+
+<div align="center">
+
+[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=gitbook&logoColor=white)](https://spiral.dev/docs/grpc-client)
+[![Sponsor](https://img.shields.io/static/v1?style=for-the-badge&label=&message=Sponsor&logo=githubsponsors&logoColor=white&color=%23EA4AAA)](https://github.com/sponsors/spiral)
+
+[![Psalm Level](https://shepherd.dev/github/spiral/grpc-client/level.svg)](https://shepherd.dev/github/spiral/grpc-client)
+[![Type Coverage](https://shepherd.dev/github/spiral/grpc-client/coverage.svg)](https://shepherd.dev/github/spiral/grpc-client)
+[![Codecov](https://codecov.io/gh/spiral/grpc-client/branch/1.x/graph/badge.svg)](https://codecov.io/gh/spiral/grpc-client/tree/1.x)
+[![Mutation testing badge](https://img.shields.io/endpoint?style=flat&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2Fspiral%2Fgrpc-client%2F1.x)](https://dashboard.stryker-mutator.io/reports/github.com/spiral/grpc-client/1.x)
+
+</div>
+
+<br />
 
 The package provides powerful and convenient functionality for making client gRPC requests through
 a simple and extensible interface.
 
-## Installation
+## Get Started
+
+### Installation
 
 ```bash
 composer require spiral/grpc-client -W
@@ -12,7 +32,7 @@ composer require spiral/grpc-client -W
 [![PHP](https://img.shields.io/packagist/php-v/spiral/grpc-client.svg?style=flat-square&logo=php)](https://packagist.org/packages/spiral/grpc-client)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spiral/grpc-client.svg?style=flat-square&logo=packagist)](https://packagist.org/packages/spiral/grpc-client)
 [![License](https://img.shields.io/packagist/l/spiral/grpc-client.svg?style=flat-square)](LICENSE.md)
-[![Total downloads](https://img.shields.io/packagist/dt/spiral/grpc-client.svg?style=flat-square)](https://packagist.org/packages/spiral/grpc-client/stats)
+[![Total Downloads](https://img.shields.io/packagist/dt/spiral/grpc-client.svg?style=flat-square)](https://packagist.org/packages/spiral/grpc-client/stats)
 
 Note that the package requires [gRPC extension](https://pecl.php.net/package/gRPC) to be installed.
 
