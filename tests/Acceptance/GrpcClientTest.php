@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Tests\Acceptance;
 
+use Spiral\Grpc\Client\Config\ConnectionConfig;
 use Spiral\Grpc\Client\Exception\ServiceClientException;
 use Spiral\Grpc\Client\GrpcClient;
 use Spiral\Grpc\Client\Interceptor\ConnectionsRotationInterceptor;
@@ -21,6 +22,8 @@ use Testo\Test;
 final class GrpcClientTest
 {
     private const GRPCBIN_ADDRESS = '127.0.0.1:9000';
+    private const GRPCBIN_TLS_PORT = 9001;
+    private const TLS_CERT = __DIR__ . '/../cert/server.crt';
 
     public function basicUnaryCall(): void
     {
@@ -71,6 +74,32 @@ final class GrpcClientTest
         ]));
 
         Assert::same($response->getFString(), 'rotated');
+    }
+
+    public function tlsUnaryCall(): void
+    {
+        $client = GrpcClient::create(
+            (new ConnectionConfig('localhost:' . self::GRPCBIN_TLS_PORT))->withTls(rootCerts: self::TLS_CERT),
+        )->withInterceptors([SetTimeoutInterceptor::createConfig(5_000)]);
+        $service = $client->service(GRPCBinInterface::class);
+
+        $response = $service->DummyUnary(new GrpcContext(), new DummyMessage(['f_string' => 'secure']));
+
+        Assert::same($response->getFString(), 'secure');
+    }
+
+    public function tlsServerNameOverride(): void
+    {
+        // The certificate is issued for `localhost`, so a call by IP passes verification only with the override
+        $client = GrpcClient::create(
+            (new ConnectionConfig('127.0.0.1:' . self::GRPCBIN_TLS_PORT))
+                ->withTls(rootCerts: self::TLS_CERT, serverName: 'localhost'),
+        )->withInterceptors([SetTimeoutInterceptor::createConfig(5_000)]);
+        $service = $client->service(GRPCBinInterface::class);
+
+        $response = $service->DummyUnary(new GrpcContext(), new DummyMessage(['f_string' => 'overridden']));
+
+        Assert::same($response->getFString(), 'overridden');
     }
 
     public function specificErrorNotFound(): void

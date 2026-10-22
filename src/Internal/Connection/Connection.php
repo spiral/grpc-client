@@ -129,6 +129,12 @@ final class Connection implements ConnectionInterface
             ]
             : ['credentials' => \Grpc\ChannelCredentials::createInsecure()];
 
+        $serverName = $this->config->tls?->serverName;
+        if ($serverName !== null) {
+            $options['grpc.ssl_target_name_override'] = $serverName;
+            $options['grpc.default_authority'] = $serverName;
+        }
+
         $this->stub = new ClientStub($this->config->address, $options);
         $this->closed = false;
     }
