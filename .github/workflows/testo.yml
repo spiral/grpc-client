@@ -10,7 +10,7 @@ on:
       - 'dload.xml'
       - '.github/workflows/testo.yml'
   push:
-    branches: ['master', '*.*']
+    branches: ['1.x', '*.*']
     paths: *paths
 
 permissions:
