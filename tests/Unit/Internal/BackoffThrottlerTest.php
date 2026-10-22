@@ -15,7 +15,7 @@ final class BackoffThrottlerTest
 {
     public static function provideConstructorInvalidArguments(): iterable
     {
-        yield 'maxInterval is 0' => [0, 0.1, 2.0];
+        yield 'maxInterval is negative' => [-1, 0.1, 2.0];
         yield 'maxJitterCoefficient is negative' => [1, -0.1, 2.0];
         yield 'maxJitterCoefficient is 1' => [1, 1.0, 2.0];
         yield 'backoffCoefficient is less than 1' => [1, 0.1, 0.9];
@@ -27,6 +27,7 @@ final class BackoffThrottlerTest
         yield 'second attempt' => [1500, 2, 500];
         yield 'third attempt' => [4500, 3, 500];
         yield 'overflow' => [300_000, 100, 500];
+        yield 'zero interval' => [0, 3, 0];
     }
 
     public static function provideCalculatorInvalidArgs(): iterable
@@ -34,7 +35,6 @@ final class BackoffThrottlerTest
         yield 'fails is negative' => [-1, 100];
         yield 'fails is zero' => [0, 100];
         yield 'interval is negative' => [1, -100];
-        yield 'interval is zero' => [1, 0];
     }
 
     #[DataProvider('provideConstructorInvalidArguments')]
