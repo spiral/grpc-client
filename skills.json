@@ -1,12 +1,8 @@
 {
     "$schema": "https://raw.githubusercontent.com/roxblnfk/skills/master/resources/skills.schema.json",
-    "aliases": [
-        ".claude/skills"
-    ],
+    "target": ".agents/skills",
+    "aliases": [".claude/skills"],
     "sources": [
-        {
-            "from": "github",
-            "package": "php-testo/testo"
-        }
+        { "from": "github", "package": "php-testo/testo" }
     ]
 }
