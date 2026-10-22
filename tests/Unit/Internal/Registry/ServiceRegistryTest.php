@@ -56,6 +56,16 @@ final class ServiceRegistryTest
         Assert::same($registry->getServiceConfigByConnection($connection), $service);
     }
 
+    public function sharedConnectionIsMappedToFirstService(): void
+    {
+        $shared = new ConnectionConfig('127.0.0.1:1');
+        $first = new ServiceConfig([$shared, new ConnectionConfig('127.0.0.1:2')]);
+        $registry = new ServiceRegistry();
+        $registry->addServices($first, new ServiceConfig($shared));
+
+        Assert::same($registry->getServiceConfigByConnection($registry->getConnection($shared)), $first);
+    }
+
     public function foreignConnectionHasNoService(): void
     {
         $registry = new ServiceRegistry();

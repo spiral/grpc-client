@@ -71,14 +71,25 @@ final class BackoffThrottlerTest
 
         $sleepTime = $throttler->calculateSleepTime(1, 1000);
         $notSame = false;
+        $maxDeviation = 0;
 
-        for ($i = 20; --$i;) {
+        for ($i = 50; --$i;) {
             $sleep = $throttler->calculateSleepTime(1, 1000);
             $notSame = $notSame || $sleep !== $sleepTime;
+            $maxDeviation = \max($maxDeviation, \abs($sleep - 1000));
 
             Assert::int($sleep)->greaterThanOrEqual(800)->lessThanOrEqual(1200);
         }
 
         Assert::true($notSame);
+        // The jitter scales the interval rather than shifting it by a fraction of a millisecond
+        Assert::true($maxDeviation > 10);
+    }
+
+    public function backoffCoefficientOfOneKeepsIntervalConstant(): void
+    {
+        $throttler = new BackoffThrottler(300_000, 0.0, 1.0);
+
+        Assert::same($throttler->calculateSleepTime(5, 100), 100);
     }
 }

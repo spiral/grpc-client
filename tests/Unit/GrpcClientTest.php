@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Tests\Unit;
 
+use Google\Protobuf\GPBEmpty;
 use Spiral\Core\Container\Autowire;
 use Spiral\Core\FactoryInterface;
 use Spiral\Grpc\Client\Config\ConnectionConfig;
 use Spiral\Grpc\Client\GrpcClient;
+use Spiral\Grpc\Client\Interceptor\Helper;
+use Spiral\Grpc\Client\Tests\Acceptance\GrpcContext;
+use Spiral\Grpc\Client\Tests\Unit\Fixture\ShortCircuitInterceptor;
+use Spiral\Grpc\Client\Tests\Unit\Fixture\TestServiceInterface;
 use Spiral\Interceptors\Context\CallContextInterface;
 use Spiral\Interceptors\HandlerInterface;
 use Spiral\Interceptors\InterceptorInterface;
@@ -84,6 +89,58 @@ final class GrpcClientTest
 
         Assert::notSame($client, $new);
         Assert::true($builder->built);
+    }
+
+    public function withFactoryInvalidatesCacheOnNewInstance(): void
+    {
+        $client = GrpcClient::create('localhost:9001');
+        $first = $client->service(StubServiceInterface::class);
+
+        $second = $client->withFactory(new StubFactory())->service(StubServiceInterface::class);
+
+        Assert::notSame($second, $first);
+    }
+
+    public function withPipelineBuilderInvalidatesCacheOnNewInstance(): void
+    {
+        $client = GrpcClient::create('localhost:9001');
+        $first = $client->service(StubServiceInterface::class);
+
+        $second = $client->withPipelineBuilder(new StubPipelineBuilder())->service(StubServiceInterface::class);
+
+        Assert::notSame($second, $first);
+    }
+
+    public function oneClientServesSeveralInterfaces(): void
+    {
+        $client = GrpcClient::create('localhost:9001');
+
+        Assert::instanceOf($client->service(StubServiceInterface::class), StubServiceInterface::class);
+        Assert::instanceOf($client->service(TestServiceInterface::class), TestServiceInterface::class);
+    }
+
+    public function interceptorsAreResolvedOncePerClient(): void
+    {
+        $factory = new StubFactory();
+        $client = GrpcClient::create('localhost:9001')
+            ->withFactory($factory)
+            ->withInterceptors([StubInterceptor::class]);
+
+        $client->service(StubServiceInterface::class);
+        $client->service(TestServiceInterface::class);
+
+        Assert::same($factory->calls, 1);
+    }
+
+    public function everyEndpointBecomesAConnection(): void
+    {
+        $interceptor = new ShortCircuitInterceptor();
+        $client = GrpcClient::create(['127.0.0.1:1', new ConnectionConfig('127.0.0.1:2'), '127.0.0.1:3'])
+            ->withInterceptors([$interceptor]);
+
+        $client->service(TestServiceInterface::class)->Ping(new GrpcContext(), new GPBEmpty());
+
+        Assert::count(Helper::getConnections($interceptor->contexts[0]), 3);
     }
 
     public function serviceReturnsCachedInstance(): void
@@ -163,7 +220,7 @@ final class GrpcClientTest
  */
 interface StubServiceInterface
 {
-    public function Ping(\Spiral\RoadRunner\GRPC\ContextInterface $ctx, \Google\Protobuf\GPBEmpty $in): \Google\Protobuf\GPBEmpty;
+    public function Ping(\Spiral\RoadRunner\GRPC\ContextInterface $ctx, GPBEmpty $in): GPBEmpty;
 }
 
 /**
@@ -202,10 +259,12 @@ final class StubPipelineBuilder implements PipelineBuilderInterface
 final class StubFactory implements FactoryInterface
 {
     public bool $called = false;
+    public int $calls = 0;
 
     public function make(string $alias, array $parameters = []): mixed
     {
         $this->called = true;
+        ++$this->calls;
         return new $alias(...$parameters);
     }
 }

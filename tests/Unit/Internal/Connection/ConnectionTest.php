@@ -51,7 +51,8 @@ final class ConnectionTest
     {
         self::skipOnWindows();
 
-        Expect::exception(\RuntimeException::class)->withMessageContaining('Failed to connect to the service');
+        // A refused port moves the channel from connecting to transient failure
+        Expect::exception(\RuntimeException::class)->withMessageContaining('transient failure');
 
         (new Connection(new ConnectionConfig(self::DEAD_ADDRESS)))->connect(5.0);
     }

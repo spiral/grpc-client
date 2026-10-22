@@ -86,7 +86,11 @@
         "test:ci": "testo",
         "infect": [
             "@putenv XDEBUG_MODE=coverage",
-            "infection --threads=max"
+            "infection --configuration=infection.json --threads=max"
+        ],
+        "infect:ci": [
+            "@putenv XDEBUG_MODE=coverage",
+            "infection --configuration=infection.json --threads=max --no-progress --show-mutations=0 --min-msi=85 --min-covered-msi=85"
         ]
     },
     "extra": {

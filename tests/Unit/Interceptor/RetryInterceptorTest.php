@@ -36,6 +36,32 @@ final class RetryInterceptorTest
         yield 'code outside of the enum' => [999];
     }
 
+    public static function provideIntervalsThatMustBeHonored(): iterable
+    {
+        // Three retries with a x10 backoff take ~0.1 s with the configured intervals; the wrong interval
+        // plans a wait beyond the 2 s deadline, which fails the call before sleeping.
+        yield 'initial interval instead of the 50 ms default' => [
+            StatusCode::Unavailable,
+            (new RetryOptions())->withInitialInterval(1)->withBackoffCoefficient(10.0),
+        ];
+        yield 'congestion interval instead of the 1 s default' => [
+            StatusCode::ResourceExhausted,
+            (new RetryOptions())->withCongestionInitialInterval(1)->withBackoffCoefficient(10.0),
+        ];
+        yield 'congestion interval for ResourceExhausted, not the initial one' => [
+            StatusCode::ResourceExhausted,
+            (new RetryOptions())->withInitialInterval(10_000)->withCongestionInitialInterval(1),
+        ];
+        yield 'initial interval for other codes, not the congestion one' => [
+            StatusCode::Unavailable,
+            (new RetryOptions())->withInitialInterval(1)->withCongestionInitialInterval(10_000),
+        ];
+        yield 'maximum interval caps the backoff' => [
+            StatusCode::Unavailable,
+            (new RetryOptions())->withInitialInterval(10)->withBackoffCoefficient(1000.0)->withMaximumInterval(1),
+        ];
+    }
+
     #[DataProvider('provideRetryableCodes')]
     public function retryableErrorIsRetriedUntilSuccess(StatusCode $code): void
     {
@@ -107,6 +133,42 @@ final class RetryInterceptorTest
         Assert::instanceOf($e, TimeoutException::class);
         Assert::same($e->getCode(), StatusCode::DeadlineExceeded->value);
         Assert::same($handler->calls(), 1);
+    }
+
+    public function retryWithinTheDeadlineSucceeds(): void
+    {
+        $handler = self::failingHandler(times: 1, code: StatusCode::Unavailable->value);
+        $context = CallContextFactory::create(options: ['timeout' => 10_000_000]);
+
+        $result = self::interceptor()->intercept($context, $handler);
+
+        Assert::same($result, 'ok');
+        Assert::same($handler->calls(), 2);
+    }
+
+    #[DataProvider('provideIntervalsThatMustBeHonored')]
+    public function configuredIntervalIsUsedBetweenRetries(StatusCode $code, RetryOptions $options): void
+    {
+        $handler = self::failingHandler(times: 3, code: $code->value);
+        $context = CallContextFactory::create(options: ['timeout' => 2_000_000]);
+        $interceptor = new RetryInterceptor($options->withMaximumJitterCoefficient(0.0));
+
+        $result = $interceptor->intercept($context, $handler);
+
+        Assert::same($result, 'ok');
+    }
+
+    public function retryWaitsForTheBackoffInterval(): void
+    {
+        $handler = self::failingHandler(times: 1, code: StatusCode::Unavailable->value);
+        $interceptor = new RetryInterceptor(
+            (new RetryOptions())->withInitialInterval(30)->withMaximumJitterCoefficient(0.0),
+        );
+
+        $start = \microtime(true);
+        $interceptor->intercept(CallContextFactory::create(), $handler);
+
+        Assert::true(\microtime(true) - $start >= 0.029);
     }
 
     public function retryInsideFiberSuspendsInsteadOfBlocking(): void
