@@ -7,6 +7,9 @@ use Testo\Application\Config\ApplicationConfig;
 use Testo\Application\Config\FinderConfig;
 use Testo\Application\Config\Plugin\SuitePlugins;
 use Testo\Application\Config\SuiteConfig;
+use Testo\Codecov\CodecovPlugin;
+use Testo\Codecov\Config\CoverageLevel;
+use Testo\Codecov\Report\CloverReport;
 
 $projectRoot = __DIR__;
 
@@ -44,6 +47,14 @@ return new ApplicationConfig(
                     tlsKey: $projectRoot . '/tests/cert/server.key',
                 ),
             ),
+        ),
+    ],
+    plugins: [
+        new CodecovPlugin(
+            level: CoverageLevel::Line,
+            reports: [
+                new CloverReport($projectRoot . '/runtime/coverage/clover.xml', 'spiral/grpc-client'),
+            ],
         ),
     ],
 );

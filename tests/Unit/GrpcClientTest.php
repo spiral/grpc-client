@@ -11,6 +11,7 @@ use Spiral\Grpc\Client\GrpcClient;
 use Spiral\Interceptors\Context\CallContextInterface;
 use Spiral\Interceptors\HandlerInterface;
 use Spiral\Interceptors\InterceptorInterface;
+use Spiral\Interceptors\PipelineBuilderInterface;
 use Testo\Assert;
 use Testo\Expect;
 use Testo\Test;
@@ -71,6 +72,18 @@ final class GrpcClientTest
         $new = $client->withFactory($factory);
 
         Assert::notSame($client, $new);
+    }
+
+    public function withPipelineBuilderIsUsedToBuildTheHandler(): void
+    {
+        $builder = new StubPipelineBuilder();
+        $client = GrpcClient::create('localhost:9001');
+
+        $new = $client->withPipelineBuilder($builder);
+        $new->service(StubServiceInterface::class);
+
+        Assert::notSame($client, $new);
+        Assert::true($builder->built);
     }
 
     public function serviceReturnsCachedInstance(): void
@@ -161,6 +174,25 @@ final class StubInterceptor implements InterceptorInterface
     public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
     {
         return $handler->handle($context);
+    }
+}
+
+/**
+ * @internal
+ */
+final class StubPipelineBuilder implements PipelineBuilderInterface
+{
+    public bool $built = false;
+
+    public function withInterceptors(InterceptorInterface ...$interceptors): static
+    {
+        return $this;
+    }
+
+    public function build(HandlerInterface $handler): HandlerInterface
+    {
+        $this->built = true;
+        return $handler;
     }
 }
 
