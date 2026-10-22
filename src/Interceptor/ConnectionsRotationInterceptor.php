@@ -35,7 +35,7 @@ final class ConnectionsRotationInterceptor implements InterceptorInterface
             try {
                 return $handler->handle(Helper::withCurrentConnection($context, $connection));
             } catch (ServiceClientException $e) {
-                Helper::withConnections($context, $connections);
+                $context = Helper::withConnections($context, $connections);
             }
         } while ($connections !== []);
 

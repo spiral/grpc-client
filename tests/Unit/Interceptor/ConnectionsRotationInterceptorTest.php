@@ -14,7 +14,6 @@ use Spiral\Grpc\Client\Tests\Unit\Fixture\RecordingHandler;
 use Spiral\Interceptors\Context\CallContextInterface;
 use Testo\Assert;
 use Testo\Codecov\Covers;
-use Testo\Skip;
 use Testo\Test;
 
 #[Test]
@@ -97,7 +96,6 @@ final class ConnectionsRotationInterceptorTest
         Assert::same($handler->calls(), 1);
     }
 
-    #[Skip('Bug: the result of Helper::withConnections() is discarded, so the next attempt still sees the failed connection.')]
     public function failedConnectionIsRemovedFromTheContextOfTheNextAttempt(): void
     {
         $first = new FakeConnection();
