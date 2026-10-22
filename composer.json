@@ -79,8 +79,9 @@
         "proto:generate": "php tests/generate-proto.php",
         "cs:diff": "php-cs-fixer fix --dry-run -v --diff",
         "cs:fix": "php-cs-fixer fix -v",
-        "psalm": "psalm",
-        "psalm:baseline": "psalm --set-baseline=psalm-baseline.xml",
+        "psalm": "psalm -c tools/psalm/psalm.xml",
+        "psalm:baseline": "psalm -c tools/psalm/psalm.xml --set-baseline=tools/psalm/psalm-baseline.xml",
+        "psalm:ci": "psalm -c tools/psalm/psalm.xml --output-format=github --shepherd --show-info=false --stats --threads=4",
         "test": "testo",
         "test:ci": "testo",
         "infect": [

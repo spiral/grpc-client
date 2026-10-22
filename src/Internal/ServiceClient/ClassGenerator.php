@@ -15,15 +15,19 @@ final class ClassGenerator
      */
     public static function generate(string $interface): array
     {
-        $namespace = \substr($interface, 0, \strrpos($interface, '\\'));
+        $namespace = \substr($interface, 0, (int) \strrpos($interface, '\\'));
         $reflection = new \ReflectionClass($interface);
         /** @var non-empty-string[] $methods */
         $methods = [];
 
         foreach ($reflection->getMethods() as $method) {
-            $returnType = $method->getReturnType()?->getName() ?? throw new \RuntimeException(
+            $returnType = $method->getReturnType() ?? throw new \RuntimeException(
                 "Method {$method->getName()} must have a return type.",
             );
+            $returnType instanceof \ReflectionNamedType or throw new \RuntimeException(
+                "Method {$method->getName()} must have a single named return type.",
+            );
+            $returnType = $returnType->getName();
             /** @see ServiceClientTrait::_handle() */
             $methods[] = self::renderMethod(
                 $method,
@@ -102,6 +106,7 @@ final class ClassGenerator
 
         $result = [];
         foreach ($types as $type) {
+            $type instanceof \ReflectionNamedType or throw new \Exception('Unknown type.');
             $result[] = $type->isBuiltin()
                 ? $type->getName()
                 : self::normalizeClassType($type, $class);
@@ -136,6 +141,6 @@ final class ClassGenerator
     {
         $string = (string) $param;
 
-        return \trim(\substr($string, \strpos($string, '=') + 1, -1));
+        return \trim(\substr($string, (int) \strpos($string, '=') + 1, -1));
     }
 }

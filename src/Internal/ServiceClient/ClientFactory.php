@@ -48,8 +48,14 @@ final class ClientFactory
         // Get related Connections
         $connections = $this->fetchConnections($services);
 
-        /** @see ServiceClientInterface::__construct() */
-        return new $class($handler, $connections);
+        /**
+         * The generated class implements both the interface and {@see ServiceClientInterface}.
+         *
+         * @see ServiceClientInterface::__construct()
+         * @var T&ServiceClientInterface $client
+         */
+        $client = new $class($handler, $connections);
+        return $client;
     }
 
     /**

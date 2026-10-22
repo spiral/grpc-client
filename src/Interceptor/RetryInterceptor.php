@@ -70,6 +70,9 @@ final class RetryInterceptor implements InterceptorInterface
             ->toAutowire();
     }
 
+    /**
+     * @psalm-suppress InvalidReturnType Psalm doesn't follow `goto`: every attempt ends in return or throw.
+     */
     #[\Override]
     public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
     {

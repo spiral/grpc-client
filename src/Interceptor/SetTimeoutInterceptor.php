@@ -22,6 +22,7 @@ final class SetTimeoutInterceptor implements InterceptorInterface
     public function __construct(
         private readonly ?int $timeout = null,
     ) {
+        /** @psalm-suppress DocblockTypeContradiction Runtime guard for callers without static analysis. */
         $timeout === null || $timeout > 0 or throw new \InvalidArgumentException(
             'Timeout must be greater than 0 or `null`.',
         );
@@ -34,6 +35,7 @@ final class SetTimeoutInterceptor implements InterceptorInterface
      */
     public static function createConfig(?int $timeout = null): Autowire
     {
+        /** @psalm-suppress DocblockTypeContradiction Runtime guard for callers without static analysis. */
         $timeout === null || $timeout > 0 or throw new \InvalidArgumentException(
             'Timeout must be greater than 0 or `null`.',
         );

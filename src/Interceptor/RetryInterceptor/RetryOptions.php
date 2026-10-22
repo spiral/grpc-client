@@ -71,6 +71,9 @@ final class RetryOptions
      */
     public float $maximumJitterCoefficient = 0.1;
 
+    /**
+     * @return Autowire<RetryInterceptor>
+     */
     public function toAutowire(): Autowire
     {
         return new Autowire(RetryInterceptor::class, [$this]);

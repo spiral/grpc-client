@@ -13,17 +13,25 @@ final class ServiceClientException extends \RuntimeException implements GrpcClie
     private Status $status;
 
     /**
+     * @param \stdClass $status Call status from ext-grpc with `code`, `details` and `metadata` properties.
+     *
      * @throws \Exception
      */
     public function __construct(\stdClass $status, ?\Throwable $previous = null)
     {
         $this->status = new Status();
 
-        if (isset($status->metadata['grpc-status-details-bin'][0])) {
-            $this->status->mergeFromString($status->metadata['grpc-status-details-bin'][0]);
+        /** @var array<string, list<string>> $metadata */
+        $metadata = $status->metadata ?? [];
+        if (isset($metadata['grpc-status-details-bin'][0])) {
+            $this->status->mergeFromString($metadata['grpc-status-details-bin'][0]);
         }
 
-        parent::__construct($status->details . " (code: $status->code)", $status->code, $previous);
+        /** @var int $code */
+        $code = $status->code;
+        /** @var string $details */
+        $details = $status->details;
+        parent::__construct($details . " (code: $code)", $code, $previous);
     }
 
     public function getStatus(): Status

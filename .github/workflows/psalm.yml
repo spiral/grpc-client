@@ -3,9 +3,11 @@ on:
     push:
         branches:
             - 1.x
-            - '*.*'
 
 name: static analysis
+
+permissions:
+    contents: read
 
 jobs:
     psalm:
@@ -13,3 +15,6 @@ jobs:
         with:
             os: >-
                 ['ubuntu-latest']
+            php: '["8.4"]'
+            bin-tool: psalm
+            command: composer psalm:ci
