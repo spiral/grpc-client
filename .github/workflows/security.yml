@@ -1,0 +1,65 @@
+---
+
+name: 🔐 Security analysis
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+  push:
+    branches: [1.x]
+
+# `head_ref` is the PR source branch on `pull_request` events and empty on `push`
+# (falls back to `github.ref` = `refs/heads/<branch>`). Different PRs from different
+# branches → different groups, so they never cross-cancel. Same PR pushed again
+# → same group, the new run cancels the previous one.
+#
+# `cancel-in-progress` is only enabled on PR events: pushes to the default branch
+# (1.x) keep their full history of CI runs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  security-analysis:
+    timeout-minutes: 4
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - ubuntu-latest
+        php-version:
+          - "8.5"
+        dependencies:
+          - highest
+    steps:
+      - name: 📦 Check out the codebase
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+
+      - name: 🛠️ Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ matrix.php-version }}
+          ini-values: error_reporting=E_ALL
+          coverage: none
+
+      - name: 🛠️ Setup problem matchers
+        run: echo "::add-matcher::${{ runner.tool_cache }}/php.json"
+
+      - name: 🤖 Validate composer.json
+        run: composer validate --ansi --strict
+
+      # The audit needs only the resolved package set: skip the dload binaries (post-update-cmd)
+      # and the tools/ installs forwarded by bamarni/composer-bin-plugin.
+      - name: 📥 Install dependencies with composer
+        uses: ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f # 3.2.1
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+          composer-options: --no-scripts --no-plugins
+
+      - name: 🐛 Check installed packages for security vulnerability advisories
+        run: composer audit --ansi
