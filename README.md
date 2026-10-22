@@ -250,7 +250,7 @@ final class AuthContextInterceptor implements InterceptorInterface
             return $handler->handle($context);
         }
 
-        $metadata = \Spiral\Grpc\Client\Interceptor\Helper::withMetadata($context);
+        $metadata = \Spiral\Grpc\Client\Interceptor\Helper::getMetadata($context);
         $metadata['auth-token'] = [$token];
 
         return $handler->handle(\Spiral\Grpc\Client\Interceptor\Helper::withMetadata($context, $metadata));
