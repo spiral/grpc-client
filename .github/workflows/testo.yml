@@ -27,6 +27,9 @@ jobs:
   testo:
     name: PHP ${{ matrix.php }} on ${{ matrix.os }}, ${{ matrix.dependencies }}
     runs-on: ${{ matrix.os }}
+    env:
+      # One job is enough to report coverage; the rest skip collecting it.
+      COVERAGE: ${{ matrix.php == '8.5' && matrix.dependencies == 'highest' }}
 
     strategy:
       fail-fast: false
@@ -77,4 +80,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run tests
-        run: composer test:ci
+        run: composer test:ci -- ${{ env.COVERAGE == 'true' && '--coverage' || '--no-coverage' }}
+
+      - name: Upload coverage to Codecov
+        if: env.COVERAGE == 'true'
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          files: runtime/coverage/clover.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
