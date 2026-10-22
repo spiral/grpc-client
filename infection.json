@@ -6,6 +6,15 @@
         ]
     },
     "testFramework": "testo",
+    "testFrameworkOptions": "--suite=Unit",
     "tmpDir": "runtime",
-    "timeout": 10
+    "timeout": 10,
+    "logs": {
+        "text": "runtime/infection.log",
+        "summaryJson": "runtime/infection-summary.json",
+        "github": true,
+        "stryker": {
+            "report": "1.x"
+        }
+    }
 }

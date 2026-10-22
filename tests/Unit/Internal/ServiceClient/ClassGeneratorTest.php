@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Spiral\Grpc\Client\Tests\Unit\Internal\ServiceClient;
 
 use Spiral\Grpc\Client\Internal\ServiceClient\ClassGenerator;
+use Spiral\Grpc\Client\Tests\Unit\Fixture\NamingServiceInterface;
 use Spiral\Grpc\Client\Tests\Unit\Fixture\SignaturesInterface;
 use Spiral\Grpc\Client\Tests\Unit\Fixture\TestServiceInterface;
 use Spiral\Grpc\Client\Tests\Unit\Fixture\UnionReturnService;
@@ -84,14 +85,14 @@ final class ClassGeneratorTest
 
     public function generatedClassNameDoesNotClashWithExistingClass(): void
     {
-        [$first, $code] = ClassGenerator::generate(TestServiceInterface::class);
-        \class_exists($first) or eval($code);
+        [$first, $code] = ClassGenerator::generate(NamingServiceInterface::class);
+        eval($code);
 
-        [$second] = ClassGenerator::generate(TestServiceInterface::class);
+        [$second] = ClassGenerator::generate(NamingServiceInterface::class);
 
-        Assert::notSame($second, $first);
-        Assert::false(\class_exists($second));
-        Assert::true(\is_subclass_of($first, TestServiceInterface::class));
+        Assert::same($first, 'Spiral\Grpc\Client\Tests\Unit\Fixture\NamingServiceClient');
+        Assert::same($second, 'Spiral\Grpc\Client\Tests\Unit\Fixture\NamingServiceClient1');
+        Assert::true(\is_subclass_of($first, NamingServiceInterface::class));
     }
 
     public function generateRejectsMethodWithoutReturnType(): never

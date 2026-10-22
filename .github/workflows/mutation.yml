@@ -1,0 +1,69 @@
+name: mutation
+
+on:
+  pull_request:
+    paths: &paths
+      - 'src/**'
+      - 'tests/**'
+      - 'testo.php'
+      - 'infection.json'
+      - 'composer.json'
+      - 'tools/infection/composer.json'
+      - '.github/workflows/mutation.yml'
+  push:
+    branches: ['1.x']
+    paths: *paths
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  DLOAD_CACHE_DIR: ${{ github.workspace }}/runtime/dload-cache
+
+jobs:
+  mutation:
+    name: Infection
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.4'
+          extensions: sockets, grpc
+          ini-values: memory_limit=-1, zend.assertions=1
+          coverage: xdebug
+
+      # `composer update` fetches protoc, protoc-gen-php-grpc and grpcbin through dload (post-update-cmd).
+      - name: Restore the dload version registry
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: runtime/dload-cache
+          key: dload-registry-${{ github.run_id }}-mutation
+          restore-keys: dload-registry-
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+        with:
+          dependency-versions: highest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Infection needs PHP 8.3+ while the package supports 8.2, so it lives in tools/infection.
+      - name: Install Infection
+        run: composer bin infection install --no-interaction --no-progress
+
+      - name: Run Infection
+        run: composer infect:ci
+        env:
+          STRYKER_DASHBOARD_API_KEY: ${{ github.event_name == 'push' && secrets.STRYKER_DASHBOARD_API_KEY || '' }}
