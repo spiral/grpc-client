@@ -62,6 +62,12 @@ final class RetryInterceptorTest
         ];
     }
 
+    public static function provideZeroIntervalOptions(): iterable
+    {
+        yield 'initialInterval is 0' => [(new RetryOptions())->withInitialInterval(0)];
+        yield 'maximumInterval is 0' => [(new RetryOptions())->withMaximumInterval(0)];
+    }
+
     #[DataProvider('provideRetryableCodes')]
     public function retryableErrorIsRetriedUntilSuccess(StatusCode $code): void
     {
@@ -200,6 +206,17 @@ final class RetryInterceptorTest
         Assert::instanceOf($interceptor, RetryInterceptor::class);
         self::catch(static fn() => $interceptor->intercept(CallContextFactory::create(), $handler));
         Assert::same($handler->calls(), 2);
+    }
+
+    #[DataProvider('provideZeroIntervalOptions')]
+    public function retriesWithoutWaitingOnZeroInterval(RetryOptions $options): void
+    {
+        $handler = self::failingHandler(times: 2, code: StatusCode::Unavailable->value);
+
+        $result = (new RetryInterceptor($options))->intercept(CallContextFactory::create(), $handler);
+
+        Assert::same($result, 'ok');
+        Assert::same($handler->calls(), 3);
     }
 
     /**

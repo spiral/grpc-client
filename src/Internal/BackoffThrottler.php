@@ -37,7 +37,7 @@ namespace Spiral\Grpc\Client\Internal;
 final class BackoffThrottler
 {
     /**
-     * @param int $maxInterval Maximum sleep interval in milliseconds. Must be greater than 0.
+     * @param int $maxInterval Maximum sleep interval in milliseconds. Must not be negative.
      * @param float $maxJitterCoefficient Maximum jitter to apply. Must be in the range [0.0, 1.0).
      *        0.1 means that actual retry time can be +/- 10% of the calculated time.
      * @param float $backoffCoefficient Coefficient used to calculate the next retry backoff interval.
@@ -52,7 +52,7 @@ final class BackoffThrottler
         $maxJitterCoefficient >= 0 && $maxJitterCoefficient < 1 or throw new \InvalidArgumentException(
             '$jitterCoefficient must be in the range [0.0, 1.0).',
         );
-        $this->maxInterval > 0 or throw new \InvalidArgumentException('$maxInterval must be greater than 0.');
+        $this->maxInterval >= 0 or throw new \InvalidArgumentException('$maxInterval must not be negative.');
         $this->backoffCoefficient >= 1.0 or throw new \InvalidArgumentException(
             '$backoffCoefficient must be greater than 1.',
         );
@@ -67,14 +67,14 @@ final class BackoffThrottler
      * @return int<0, max>
      *
      * @psalm-assert int<1, max> $failureCount
-     * @psalm-assert int<1, max> $initialInterval
+     * @psalm-assert int<0, max> $initialInterval
      *
      * @psalm-suppress InvalidOperand
      */
     public function calculateSleepTime(int $failureCount, int $initialInterval): int
     {
         $failureCount > 0 or throw new \InvalidArgumentException('$failureCount must be greater than 0.');
-        $initialInterval > 0 or throw new \InvalidArgumentException('$initialInterval must be greater than 0.');
+        $initialInterval >= 0 or throw new \InvalidArgumentException('$initialInterval must not be negative.');
 
         // Choose a random number in the range -maxJitterCoefficient ... +maxJitterCoefficient
         $jitter = \random_int(-1000, 1000) * $this->maxJitterCoefficient / 1000;
