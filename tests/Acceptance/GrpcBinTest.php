@@ -13,6 +13,7 @@ use Spiral\Grpc\Client\ServiceClientProvider;
 use Spiral\Grpc\Client\Tests\Generated\Grpcbin\DummyMessage;
 use Spiral\Grpc\Client\Tests\Generated\Grpcbin\EmptyMessage;
 use Spiral\Grpc\Client\Tests\Generated\Grpcbin\GRPCBinInterface;
+use Spiral\Grpc\Client\GrpcClient;
 use Spiral\Grpc\Client\Tests\Generated\Grpcbin\HeadersMessage;
 use Spiral\Grpc\Client\Tests\Generated\Grpcbin\SpecificErrorRequest;
 use Spiral\RoadRunner\GRPC\ContextInterface;
@@ -133,6 +134,25 @@ final class GrpcBinTest
 
         Assert::notSame($response->getDescription(), '');
         Assert::true($response->getEndpoints()->count() > 0);
+    }
+
+    public function tlsServerNameOverride(): void
+    {
+        // The grpcbin TLS listener (127.0.0.1:9001) uses tests/cert/server.crt, issued for "localhost".
+        // Connecting by IP must fail TLS verification unless the serverName override is honored.
+        $client = GrpcClient::create(
+            (new ConnectionConfig('127.0.0.1:9001'))->withTls(
+                rootCerts: \dirname(__DIR__) . '/cert/server.crt',
+                serverName: 'localhost',
+            ),
+        );
+
+        $response = $client->service(GRPCBinInterface::class)->DummyUnary(
+            $this->createContext(),
+            new DummyMessage(['f_string' => 'hello tls']),
+        );
+
+        Assert::same($response->getFString(), 'hello tls');
     }
 
     private function createClient(): GRPCBinInterface
