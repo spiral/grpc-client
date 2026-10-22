@@ -14,6 +14,11 @@ use Spiral\Grpc\Client\Internal\StatusCode;
  */
 final class ClientStub extends BaseStub
 {
+    /**
+     * @param non-empty-string $method
+     * @param array{class-string<Message>, non-empty-string} $deserializer The response class and a method
+     *        name: grpc/grpc instantiates the class and calls `mergeFromString()`, ignoring the name.
+     */
     public function invoke(
         string $method,
         Message $in,

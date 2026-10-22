@@ -1,0 +1,34 @@
+<?php
+
+namespace Grpc;
+
+final class ChannelCredentials
+{
+    public static function setDefaultRootsPem(string $pem_roots): void {}
+
+    public static function invalidateDefaultRootsPem(): void {}
+
+    public static function createDefault(): ChannelCredentials {}
+
+    public static function createSsl(
+        ?string $pem_root_certs = null,
+        ?string $pem_private_key = null,
+        ?string $pem_cert_chain = null,
+    ): ChannelCredentials {}
+
+    public static function createComposite(
+        ChannelCredentials $channel_creds,
+        CallCredentials $call_creds,
+    ): ChannelCredentials {}
+
+    public static function createInsecure(): null {}
+
+    public static function createXds(?ChannelCredentials $fallback_creds = null): ChannelCredentials {}
+}
+
+final class CallCredentials
+{
+    public static function createComposite(CallCredentials $creds1, CallCredentials $creds2): CallCredentials {}
+
+    public static function createFromPlugin(\Closure $callback): CallCredentials {}
+}

@@ -12,15 +12,17 @@ final class Helper
     public const ATTR_CONNECTIONS = 'connections';
 
     /**
-     * @return Connection[]
+     * @return list<Connection>
      */
     public static function getConnections(CallContextInterface $context): array
     {
-        return $context->getAttribute(self::ATTR_CONNECTIONS, []);
+        /** @var list<Connection> $connections */
+        $connections = $context->getAttribute(self::ATTR_CONNECTIONS, []);
+        return $connections;
     }
 
     /**
-     * @param Connection[] $connections
+     * @param list<Connection> $connections
      */
     public static function withConnections(CallContextInterface $context, array $connections): CallContextInterface
     {
@@ -29,7 +31,9 @@ final class Helper
 
     public static function getCurrentConnection(CallContextInterface $context): Connection
     {
-        return $context->getArguments()[0];
+        /** @var Connection $connection */
+        $connection = $context->getArguments()[0];
+        return $connection;
     }
 
     public static function withCurrentConnection(
@@ -46,7 +50,9 @@ final class Helper
      */
     public static function getMessage(CallContextInterface $context): object
     {
-        return $context->getArguments()[2];
+        /** @var object $message */
+        $message = $context->getArguments()[2];
+        return $message;
     }
 
     /**
@@ -66,7 +72,9 @@ final class Helper
      */
     public static function getMetadata(CallContextInterface $context): array
     {
-        return $context->getArguments()[4];
+        /** @var array<non-empty-string, list<scalar>> $metadata */
+        $metadata = $context->getArguments()[4];
+        return $metadata;
     }
 
     /**
@@ -86,7 +94,9 @@ final class Helper
      */
     public static function getReturnType(CallContextInterface $context): string
     {
-        return $context->getArguments()[3][0];
+        /** @var array{class-string, non-empty-string} $deserializer */
+        $deserializer = $context->getArguments()[3];
+        return $deserializer[0];
     }
 
     /**
@@ -97,7 +107,10 @@ final class Helper
         string $returnType,
     ): CallContextInterface {
         $args = $context->getArguments();
-        $args[3][0] = $returnType;
+        /** @var array{class-string, non-empty-string} $deserializer */
+        $deserializer = $args[3];
+        $deserializer[0] = $returnType;
+        $args[3] = $deserializer;
         return $context->withArguments($args);
     }
 
@@ -106,9 +119,14 @@ final class Helper
      */
     public static function getOptions(CallContextInterface $context): array
     {
-        return $context->getArguments()[5];
+        /** @var array<non-empty-string, scalar> $options */
+        $options = $context->getArguments()[5];
+        return $options;
     }
 
+    /**
+     * @param array<non-empty-string, scalar> $options
+     */
     public static function withOptions(
         CallContextInterface $context,
         array $options,

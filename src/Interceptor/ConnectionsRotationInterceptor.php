@@ -30,15 +30,15 @@ final class ConnectionsRotationInterceptor implements InterceptorInterface
         \usort($connections, static fn(Connection $a, Connection $b) => $b->isConnected() <=> $a->isConnected());
 
         // Just try the next connection if the current one failed
-        trying:
-        $connection = \array_shift($connections);
-        try {
-            return $handler->handle(Helper::withCurrentConnection($context, $connection));
-        } catch (ServiceClientException $e) {
-            \count($connections) > 0 or throw $e;
+        do {
+            $connection = \array_shift($connections);
+            try {
+                return $handler->handle(Helper::withCurrentConnection($context, $connection));
+            } catch (ServiceClientException $e) {
+                Helper::withConnections($context, $connections);
+            }
+        } while ($connections !== []);
 
-            Helper::withConnections($context, $connections);
-            goto trying;
-        }
+        throw $e;
     }
 }
