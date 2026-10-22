@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Tests\Unit\Interceptor;
 
+use Spiral\Core\FactoryInterface;
 use Spiral\Grpc\Client\Interceptor\Helper;
 use Spiral\Grpc\Client\Interceptor\SetTimeoutInterceptor;
 use Spiral\Interceptors\Context\CallContext;
@@ -31,9 +32,18 @@ final class SetTimeoutInterceptorTest
 
     public function createConfigAcceptsOneMillisecond(): void
     {
-        $config = SetTimeoutInterceptor::createConfig(1);
+        $factory = new class implements FactoryInterface {
+            public function make(string $alias, array $parameters = []): mixed
+            {
+                return new $alias(...$parameters);
+            }
+        };
 
-        Assert::same($config->parameters, [1]);
+        // Autowire's `parameters` are private before spiral/core 3.15, so check the interceptor it builds
+        $interceptor = SetTimeoutInterceptor::createConfig(1)->resolve($factory);
+
+        Assert::instanceOf($interceptor, SetTimeoutInterceptor::class);
+        Assert::same(self::interceptOptions($interceptor)['timeout'], 1000);
     }
 
     public function convertsMillisecondsToMicroseconds(): void

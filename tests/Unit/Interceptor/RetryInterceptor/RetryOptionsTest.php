@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Tests\Unit\Interceptor\RetryInterceptor;
 
+use Spiral\Core\FactoryInterface;
 use Spiral\Grpc\Client\Interceptor\RetryInterceptor;
 use Spiral\Grpc\Client\Interceptor\RetryInterceptor\RetryOptions;
 use Testo\Assert;
@@ -68,10 +69,23 @@ final class RetryOptionsTest
     {
         $options = new RetryOptions();
 
-        $autowire = $options->toAutowire();
+        $factory = new class implements FactoryInterface {
+            public ?string $alias = null;
+            public array $parameters = [];
 
-        Assert::same($autowire->alias, RetryInterceptor::class);
-        Assert::same($autowire->parameters, [$options]);
+            public function make(string $alias, array $parameters = []): mixed
+            {
+                $this->alias = $alias;
+                $this->parameters = $parameters;
+                return new \stdClass();
+            }
+        };
+
+        // Autowire's `alias`/`parameters` are private before spiral/core 3.15, so inspect what it resolves
+        $options->toAutowire()->resolve($factory);
+
+        Assert::same($factory->alias, RetryInterceptor::class);
+        Assert::same($factory->parameters, [$options]);
     }
 
     /**
