@@ -24,8 +24,8 @@ final class HelperTest
     {
         yield 'connection' => ['getCurrentConnection', 'withCurrentConnection', 0, self::createConnection()];
         yield 'message' => ['getMessage', 'withMessage', 2, new StringValue(['value' => 'foo'])];
-        yield 'metadata' => ['getMetadata', 'withMetadata', 4, ['auth-token' => ['secret']]];
-        yield 'options' => ['getOptions', 'withOptions', 5, ['timeout' => 1000]];
+        yield 'metadata' => ['getMetadata', 'withMetadata', 4, ['auth-token' => ['secret'], 'x-trace' => ['a', 'b']]];
+        yield 'options' => ['getOptions', 'withOptions', 5, ['timeout' => 1000, 'retries' => 3]];
     }
 
     /**
