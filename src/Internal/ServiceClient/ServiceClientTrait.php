@@ -29,6 +29,7 @@ trait ServiceClientTrait
     public function __construct(
         private readonly HandlerInterface $handler,
         private readonly array $connections,
+        private readonly ServiceConfigMap $serviceConfigs,
     ) {}
 
     /**
@@ -65,7 +66,7 @@ trait ServiceClientTrait
             ],
         );
         $callContext = Helper::withConnections($callContext, $this->connections);
-
+        $callContext = Helper::withServiceConfigs($callContext, $this->serviceConfigs);
 
         return $this->handler->handle($callContext);
     }

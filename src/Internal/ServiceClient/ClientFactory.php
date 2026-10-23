@@ -45,8 +45,7 @@ final class ClientFactory
         /** @var class-string<ServiceClientInterface> $class */
         $class = self::$cache[$interface] ??= $this->prepareClientClass($interface);
 
-        // Get related Connections
-        $connections = $this->fetchConnections($services);
+        [$connections, $serviceConfigs] = $this->fetchConnections($services);
 
         /**
          * The generated class implements both the interface and {@see ServiceClientInterface}.
@@ -54,7 +53,7 @@ final class ClientFactory
          * @see ServiceClientInterface::__construct()
          * @var T&ServiceClientInterface $client
          */
-        $client = new $class($handler, $connections);
+        $client = new $class($handler, $connections, $serviceConfigs);
         return $client;
     }
 
@@ -73,18 +72,26 @@ final class ClientFactory
     }
 
     /**
-     * @param array<ServiceConfig> $services
-     * @return array<ConnectionInterface>
+     * Collect the connections of the services and map each connection to its service.
+     *
+     * The map is built per interface: services of other interfaces may share a connection
+     * and must not lend it their interceptors.
+     *
+     * @param list<ServiceConfig> $services
+     * @return array{list<ConnectionInterface>, ServiceConfigMap}
      */
     private function fetchConnections(array $services): array
     {
-        $result = [];
+        $connections = [];
+        $pairs = [];
         foreach ($services as $service) {
-            foreach ($service->connections as $connection) {
-                $result[] = $this->registry->getConnection($connection);
+            foreach ($service->connections as $connectionConfig) {
+                $connection = $this->registry->getConnection($connectionConfig);
+                $connections[] = $connection;
+                $pairs[] = [$connection, $service];
             }
         }
 
-        return $result;
+        return [$connections, new ServiceConfigMap($pairs)];
     }
 }

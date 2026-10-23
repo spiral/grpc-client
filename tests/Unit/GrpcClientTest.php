@@ -9,6 +9,7 @@ use Spiral\Core\Container\Autowire;
 use Spiral\Core\FactoryInterface;
 use Spiral\Grpc\Client\Config\ConnectionConfig;
 use Spiral\Grpc\Client\GrpcClient;
+use Spiral\Grpc\Client\Interceptor\ExecuteServiceInterceptors;
 use Spiral\Grpc\Client\Interceptor\Helper;
 use Spiral\Grpc\Client\Tests\Acceptance\GrpcContext;
 use Spiral\Grpc\Client\Tests\Unit\Fixture\ShortCircuitInterceptor;
@@ -141,6 +142,18 @@ final class GrpcClientTest
         $client->service(TestServiceInterface::class)->Ping(new GrpcContext(), new GPBEmpty());
 
         Assert::count(Helper::getConnections($interceptor->contexts[0]), 3);
+    }
+
+    public function executeServiceInterceptorsPassesTheCallThrough(): void
+    {
+        $terminal = new ShortCircuitInterceptor();
+        $client = GrpcClient::create('127.0.0.1:1')
+            ->withInterceptors([ExecuteServiceInterceptors::class, $terminal]);
+
+        $response = $client->service(TestServiceInterface::class)->Ping(new GrpcContext(), new GPBEmpty());
+
+        Assert::instanceOf($response, GPBEmpty::class);
+        Assert::count($terminal->contexts, 1);
     }
 
     public function serviceReturnsCachedInstance(): void

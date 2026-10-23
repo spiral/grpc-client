@@ -6,9 +6,12 @@ namespace Spiral\Grpc\Client\Tests\Unit\Interceptor;
 
 use Google\Protobuf\GPBEmpty;
 use Google\Protobuf\StringValue;
+use Spiral\Grpc\Client\Config\ConnectionConfig;
+use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Interceptor\Helper;
 use Spiral\Grpc\Client\Internal\Connection\ClientStub;
 use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
+use Spiral\Grpc\Client\Internal\ServiceClient\ServiceConfigMap;
 use Spiral\Interceptors\Context\CallContext;
 use Spiral\Interceptors\Context\Target;
 use Testo\Assert;
@@ -92,6 +95,53 @@ final class HelperTest
         Assert::same(Helper::getConnections(self::createContext()), []);
     }
 
+    public function serviceConfigIsTheOneOfTheCurrentConnection(): void
+    {
+        $context = self::createContext();
+        $current = Helper::getCurrentConnection($context);
+        $service = self::createService();
+
+        $modified = Helper::withServiceConfigs($context, self::serviceConfigs(
+            [self::createConnection(), self::createService()],
+            [$current, $service],
+        ));
+
+        Assert::same(Helper::getServiceConfig($modified), $service);
+    }
+
+    public function serviceConfigFollowsTheCurrentConnection(): void
+    {
+        $other = self::createConnection();
+        $otherService = self::createService();
+        $context = Helper::withServiceConfigs(self::createContext(), self::serviceConfigs(
+            [$other, $otherService],
+        ));
+
+        $modified = Helper::withCurrentConnection($context, $other);
+
+        Assert::null(Helper::getServiceConfig($context));
+        Assert::same(Helper::getServiceConfig($modified), $otherService);
+    }
+
+    public function serviceConfigIsNullWithoutServiceConfigs(): void
+    {
+        Assert::null(Helper::getServiceConfig(self::createContext()));
+    }
+
+    public function withServiceConfigsLeavesTheOriginalContextIntact(): void
+    {
+        $context = self::createContext();
+        $service = self::createService();
+
+        $modified = Helper::withServiceConfigs($context, self::serviceConfigs(
+            [Helper::getCurrentConnection($context), $service],
+        ));
+
+        Assert::same(Helper::getServiceConfig($modified), $service);
+        Assert::null(Helper::getServiceConfig($context));
+        Assert::same($modified->getArguments(), $context->getArguments());
+    }
+
     /**
      * Mirrors the argument layout built in {@see \Spiral\Grpc\Client\Internal\ServiceClient\ServiceClientTrait::_handle()}.
      */
@@ -108,6 +158,19 @@ final class HelperTest
                 ['timeout' => 500],
             ],
         );
+    }
+
+    private static function createService(): ServiceConfig
+    {
+        return new ServiceConfig(new ConnectionConfig('127.0.0.1:1'));
+    }
+
+    /**
+     * @param array{ConnectionInterface, ServiceConfig} ...$pairs
+     */
+    private static function serviceConfigs(array ...$pairs): ServiceConfigMap
+    {
+        return new ServiceConfigMap($pairs);
     }
 
     private static function createConnection(): ConnectionInterface
