@@ -7,31 +7,28 @@ namespace Spiral\Grpc\Client\Interceptor;
 use Spiral\Core\Attribute\Proxy;
 use Spiral\Core\Container\Autowire;
 use Spiral\Core\FactoryInterface;
-use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
 use Spiral\Interceptors\Context\CallContextInterface;
 use Spiral\Interceptors\HandlerInterface;
 use Spiral\Interceptors\InterceptorInterface as Interceptor;
+use Spiral\Interceptors\PipelineBuilder;
 use Spiral\Interceptors\PipelineBuilderInterface;
 
 /**
- * Execute an interceptor pipeline for the current service.
+ * Execute the interceptors of the service that owns the current connection.
+ *
+ * The service is taken from the call context, see {@see Helper::getServiceConfig()}.
  */
 final class ExecuteServiceInterceptors implements Interceptor
 {
     public function __construct(
         #[Proxy] private readonly FactoryInterface $factory,
-        private readonly ServiceRegistry $serviceRegistry,
-        private readonly PipelineBuilderInterface $pipelineBuilder,
+        private readonly PipelineBuilderInterface $pipelineBuilder = new PipelineBuilder(),
     ) {}
 
     #[\Override]
     public function intercept(CallContextInterface $context, HandlerInterface $handler): mixed
     {
-        // Get current connection
-        $connection = Helper::getCurrentConnection($context);
-
-        // Find the interceptor pipeline for the service
-        $interceptors = $this->serviceRegistry->getServiceConfigByConnection($connection)?->interceptors ?? [];
+        $interceptors = Helper::getServiceConfig($context)?->interceptors ?? [];
 
         return $interceptors === []
             ? $handler->handle($context)

@@ -296,3 +296,17 @@ This happens because the `RetryInterceptor` takes into account previously config
 Also, the placement of the `ExecuteServiceInterceptors` interceptor,
 which embeds the interceptors of the currently running service,
 will affect the final sequence of interceptors.
+
+`ExecuteServiceInterceptors` picks the service by the current connection,
+so place it after the interceptors that choose or switch the connection, such as `ConnectionsRotationInterceptor`:
+
+```php
+interceptors: [
+    RetryInterceptor::class,
+    ConnectionsRotationInterceptor::class,
+    ExecuteServiceInterceptors::class,
+],
+```
+
+Placed before them, it runs the interceptors of the first connection's service,
+even when the call fails over to a connection of another service.
