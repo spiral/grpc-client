@@ -8,6 +8,7 @@ use Google\Protobuf\GPBEmpty;
 use Spiral\Grpc\Client\Config\ConnectionConfig;
 use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Interceptor\Helper;
+use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface;
 use Spiral\Grpc\Client\Internal\Registry\ServiceRegistry;
 use Spiral\Grpc\Client\Internal\ServiceClient\ClientFactory;
 use Spiral\Grpc\Client\Internal\ServiceClient\ServiceClientInterface;
@@ -63,6 +64,41 @@ final class ClientFactoryTest
         Assert::count(Helper::getConnections($interceptor->contexts[0]), 3);
     }
 
+    public function eachConnectionIsMappedToItsService(): void
+    {
+        $first = new ServiceConfig(
+            [new ConnectionConfig('127.0.0.1:1'), new ConnectionConfig('127.0.0.1:2')],
+            interfaces: [TestServiceInterface::class],
+        );
+        $second = new ServiceConfig(new ConnectionConfig('127.0.0.1:3'), interfaces: [TestServiceInterface::class]);
+
+        $services = self::servicesOfConnections(self::registry($first, $second), TestServiceInterface::class);
+
+        Assert::same($services, [$first, $first, $second]);
+    }
+
+    public function sharedConnectionBelongsToTheFirstServiceOfTheInterface(): void
+    {
+        $shared = new ConnectionConfig('127.0.0.1:1');
+        $first = new ServiceConfig($shared, interfaces: [TestServiceInterface::class]);
+        $second = new ServiceConfig($shared, interfaces: [TestServiceInterface::class]);
+
+        $services = self::servicesOfConnections(self::registry($first, $second), TestServiceInterface::class);
+
+        Assert::same(\array_unique(\array_map(\spl_object_id(...), $services)), [\spl_object_id($first)]);
+    }
+
+    public function sharedConnectionBelongsToTheServiceOfTheRequestedInterface(): void
+    {
+        $shared = new ConnectionConfig('127.0.0.1:1');
+        $other = new ServiceConfig($shared, interfaces: [OtherServiceInterface::class]);
+        $test = new ServiceConfig($shared, interfaces: [TestServiceInterface::class]);
+        $registry = self::registry($other, $test);
+
+        Assert::same(self::servicesOfConnections($registry, TestServiceInterface::class), [$test]);
+        Assert::same(self::servicesOfConnections($registry, OtherServiceInterface::class), [$other]);
+    }
+
     public function unknownInterfaceIsRejected(): void
     {
         Expect::exception(\InvalidArgumentException::class)
@@ -92,5 +128,27 @@ final class ClientFactoryTest
     private static function handler(): RecordingHandler
     {
         return new RecordingHandler(static fn(): null => null);
+    }
+
+    /**
+     * Makes a call through a new client and resolves the service of each connection the call carries.
+     *
+     * @param class-string<TestServiceInterface|OtherServiceInterface> $interface
+     * @return list<ServiceConfig|null>
+     */
+    private static function servicesOfConnections(ServiceRegistry $registry, string $interface): array
+    {
+        $interceptor = new ShortCircuitInterceptor();
+        $handler = (new PipelineBuilder())->withInterceptors($interceptor)->build(self::handler());
+
+        (new ClientFactory($registry))->make($interface, $handler)->Ping(new GrpcContext(), new GPBEmpty());
+
+        $context = $interceptor->contexts[0];
+        return \array_map(
+            static fn(ConnectionInterface $connection): ?ServiceConfig => Helper::getServiceConfig(
+                Helper::withCurrentConnection($context, $connection),
+            ),
+            Helper::getConnections($context),
+        );
     }
 }

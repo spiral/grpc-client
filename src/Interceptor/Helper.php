@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace Spiral\Grpc\Client\Interceptor;
 
+use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Internal\Connection\ConnectionInterface as Connection;
+use Spiral\Grpc\Client\Internal\ServiceClient\ServiceConfigMap;
 use Spiral\Interceptors\Context\CallContextInterface;
 
 final class Helper
 {
     public const ATTR_CONNECTIONS = 'connections';
+
+    /**
+     * @internal
+     * @psalm-internal Spiral\Grpc\Client
+     */
+    public const ATTR_SERVICE_CONFIGS = 'service-configs';
 
     /**
      * @return list<Connection>
@@ -43,6 +51,27 @@ final class Helper
         $args = $context->getArguments();
         $args[0] = $connection;
         return $context->withArguments($args);
+    }
+
+    /**
+     * Get the config of the service that owns the current connection.
+     *
+     * @return ServiceConfig|null Null when the call carries no service configs or none for the current connection.
+     */
+    public static function getServiceConfig(CallContextInterface $context): ?ServiceConfig
+    {
+        /** @var ServiceConfigMap|null $configs */
+        $configs = $context->getAttribute(self::ATTR_SERVICE_CONFIGS);
+        return $configs?->get(self::getCurrentConnection($context));
+    }
+
+    /**
+     * @internal
+     * @psalm-internal Spiral\Grpc\Client
+     */
+    public static function withServiceConfigs(CallContextInterface $context, ServiceConfigMap $configs): CallContextInterface
+    {
+        return $context->withAttribute(self::ATTR_SERVICE_CONFIGS, $configs);
     }
 
     /**

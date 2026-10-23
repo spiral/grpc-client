@@ -19,12 +19,6 @@ final class ServiceRegistry
      */
     private array $serviceMap = [];
 
-    /** @var array<ServiceConfig> */
-    private array $configs = [];
-
-    /** @var array<int, ServiceConfig> */
-    private array $connectionToServiceConfig = [];
-
     /**
      * Connections cache where key is a connection config object id.
      * @var array<int, Connection>
@@ -58,27 +52,11 @@ final class ServiceRegistry
         $result = new Connection($connection);
         $this->connectionConfigToConnection[$index] = $result;
 
-        // Find related Service Config
-        foreach ($this->configs as $config) {
-            foreach ($config->connections as $connectionConfig) {
-                if ($connectionConfig === $connection) {
-                    $this->connectionToServiceConfig[\spl_object_id($result)] = $config;
-                    break 2;
-                }
-            }
-        }
-
         return $result;
-    }
-
-    public function getServiceConfigByConnection(ConnectionInterface $connection): ?ServiceConfig
-    {
-        return $this->connectionToServiceConfig[\spl_object_id($connection)] ?? null;
     }
 
     private function addService(ServiceConfig $config): void
     {
-        $this->configs[] = $config;
         foreach ($config->interfaces as $interface) {
             $this->serviceMap[$interface][] = $config;
         }
