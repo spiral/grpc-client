@@ -17,7 +17,8 @@ use Spiral\Interceptors\InterceptorInterface;
 /**
  * Apply retry logic to the gRPC call.
  *
- * If the timeout is defined in the context before the interceptor, it will be used as a deadline between retries.
+ * If the timeout is defined in the context before the interceptor, it becomes the deadline of the whole call:
+ * each retry gets only the time left until it.
  * To set the timeout, use {@see SetTimeoutInterceptor}.
  *
  * Use {@see RetryInterceptor::createConfig()} to create a config DTO in a configuration file.
@@ -138,6 +139,13 @@ final class RetryInterceptor implements InterceptorInterface
 
             // wait till the next call
             $this->sleep($wait);
+
+            // The retry gets only the time left, so the whole call stays within the deadline
+            if ($deadline !== null) {
+                $options = Helper::getOptions($context);
+                $options['timeout'] = \max(1, (int) (($deadline - \microtime(true)) * 1_000_000.0));
+                $context = Helper::withOptions($context, $options);
+            }
         }
         goto do_try;
     }
