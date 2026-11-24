@@ -46,6 +46,9 @@ final class ClientFactory
         $class = self::$cache[$interface] ??= $this->prepareClientClass($interface);
 
         [$connections, $serviceConfigs] = $this->fetchConnections($services);
+        $connections === [] and throw new \RuntimeException(
+            "No connections configured for the interface `$interface`.",
+        );
 
         /**
          * The generated class implements both the interface and {@see ServiceClientInterface}.

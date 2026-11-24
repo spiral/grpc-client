@@ -115,6 +115,16 @@ final class ClientFactoryTest
         (new ClientFactory(new ServiceRegistry()))->make(OtherServiceInterface::class, self::handler());
     }
 
+    public function interfaceWithoutConnectionsIsRejected(): void
+    {
+        $registry = self::registry(new ServiceConfig([], interfaces: [OtherServiceInterface::class]));
+
+        Expect::exception(\RuntimeException::class)
+            ->withMessage(\sprintf('No connections configured for the interface `%s`.', OtherServiceInterface::class));
+
+        (new ClientFactory($registry))->make(OtherServiceInterface::class, self::handler());
+    }
+
     private static function registry(ServiceConfig ...$services): ServiceRegistry
     {
         $registry = new ServiceRegistry();
