@@ -4,6 +4,9 @@
 # PHP-aware hunk headers in `git diff`.
 *.php diff=php
 
+# List-like manifests: concurrent additions to the same list merge instead of conflicting.
+/composer.json merge=union
+
 # Default: nothing is included in the `composer archive` of spiral/grpc-client.
 # Re-include only the files that actually belong to the package below.
 * export-ignore
