@@ -93,6 +93,17 @@ final class ClassGeneratorTest
         Assert::true(\is_subclass_of($first, NamingServiceInterface::class));
     }
 
+    public function clientIsGeneratedForInterfaceInGlobalNamespace(): void
+    {
+        require_once __DIR__ . '/../../Fixture/GlobalServiceInterface.php';
+
+        [$class, $code] = ClassGenerator::generate(\GlobalServiceInterface::class);
+        eval($code);
+
+        Assert::same($class, 'GlobalServiceClient');
+        Assert::true(\is_subclass_of($class, \GlobalServiceInterface::class));
+    }
+
     public function generateRejectsMethodWithoutReturnType(): never
     {
         Expect::exception(\RuntimeException::class)
