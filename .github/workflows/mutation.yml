@@ -8,7 +8,7 @@ on:
       - 'testo.php'
       - 'infection.json'
       - 'composer.json'
-      - 'tools/infection/composer.json'
+      - 'vendor-bin/infection/composer.json'
       - '.github/workflows/mutation.yml'
   push:
     branches: ['1.x']
@@ -59,7 +59,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Infection needs PHP 8.3+ while the package supports 8.2, so it lives in tools/infection.
+      # Infection needs PHP 8.3+ while the package supports 8.2, so it lives in vendor-bin/infection.
       - name: Install Infection
         run: composer bin infection install --no-interaction --no-progress
 

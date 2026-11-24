@@ -54,7 +54,7 @@ jobs:
         run: composer validate --ansi --strict
 
       # The audit needs only the resolved package set: skip the dload binaries (post-update-cmd)
-      # and the tools/ installs forwarded by bamarni/composer-bin-plugin.
+      # and the plugins (llm/skills sync).
       - name: 📥 Install dependencies with composer
         uses: ramsey/composer-install@a8d0d959dab41457692a5e2041bd9b757a119e3f # 3.2.1
         with:

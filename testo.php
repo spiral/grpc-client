@@ -13,9 +13,6 @@ use Testo\Codecov\Report\CloverReport;
 
 $projectRoot = __DIR__;
 
-// Testo lives in tools/testo and boots its own autoloader; the project's one is loaded here
-require_once $projectRoot . '/vendor/autoload.php';
-
 $isWindows = \DIRECTORY_SEPARATOR === '\\';
 $grpcbinBinary = $projectRoot . '/grpcbin' . ($isWindows ? '.exe' : '');
 
