@@ -25,7 +25,7 @@
     "require": {
         "php": ">=8.2",
         "google/common-protos": "^4.6",
-        "google/protobuf": "^4 || ^5",
+        "google/protobuf": "^4.33.6 || ^5",
         "grpc/grpc": "^1.57",
         "spiral/core": "^3.14",
         "spiral/interceptors": "^3.14"
@@ -39,6 +39,9 @@
         "spiral/boot": "^3.14",
         "testo/bridge-infection": "^0.1.9",
         "testo/testo": "^0.10.54"
+    },
+    "conflict": {
+        "ext-protobuf": "<4.31"
     },
     "suggest": {
         "ext-grpc": "Required to execute gRPC calls"
