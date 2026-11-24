@@ -47,6 +47,16 @@ final class ConnectionTest
         Assert::notSame($connection->getStub(), $stub);
     }
 
+    public function disconnectedConnectionIsNotConnected(): void
+    {
+        self::skipOnWindows();
+
+        $connection = new Connection(new ConnectionConfig(self::DEAD_ADDRESS));
+        $connection->disconnect();
+
+        Assert::false($connection->isConnected());
+    }
+
     public function connectToUnreachableServerFails(): void
     {
         self::skipOnWindows();
