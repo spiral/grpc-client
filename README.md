@@ -146,6 +146,7 @@ use Spiral\Grpc\Client\Config\ServiceConfig;
 use Spiral\Grpc\Client\Config\ConnectionConfig;
 use Spiral\Grpc\Client\Interceptor\SetTimeoutInterceptor;
 use Spiral\Grpc\Client\Interceptor\RetryInterceptor;
+use Spiral\Grpc\Client\Interceptor\ConnectionsRotationInterceptor;
 use Spiral\Grpc\Client\Interceptor\ExecuteServiceInterceptors;
 
 new GrpcClientConfig(
@@ -156,6 +157,8 @@ new GrpcClientConfig(
             initialInterval: 100, // 0.1 seconds
             backoffCoefficient: 1.5,
         ),
+        ConnectionsRotationInterceptor::class,
+        // After the rotation: runs the interceptors of the service that owns the chosen connection
         ExecuteServiceInterceptors::class,
     ],
     services: [
