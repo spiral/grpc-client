@@ -9,7 +9,6 @@ use Spiral\Grpc\Client\Interceptor\RetryInterceptor;
 use Spiral\Grpc\Client\Interceptor\RetryInterceptor\RetryOptions;
 use Testo\Assert;
 use Testo\Codecov\Covers;
-use Testo\Core\Exception\SkipTest;
 use Testo\Data\DataProvider;
 use Testo\Expect;
 use Testo\Test;
@@ -56,10 +55,6 @@ final class RetryOptionsTest
         yield 'congestionInitialInterval negative' => ['withCongestionInitialInterval', -1];
         yield 'maximumJitterCoefficient negative' => ['withMaximumJitterCoefficient', -0.1];
         yield 'maximumJitterCoefficient one' => ['withMaximumJitterCoefficient', 1.0];
-    }
-
-    public static function provideAssertViolatingValues(): iterable
-    {
         yield 'backoffCoefficient below one' => ['withBackoffCoefficient', 0.5];
         yield 'maximumInterval negative' => ['withMaximumInterval', -1];
         yield 'maximumAttempts negative' => ['withMaximumAttempts', -1];
@@ -119,12 +114,18 @@ final class RetryOptionsTest
     /**
      * @param non-empty-string $method
      */
-    #[DataProvider('provideAssertViolatingValues')]
-    public function withAssertViolatingValueFails(string $method, mixed $value): never
+    #[DataProvider('provideInvalidValues')]
+    public function withInvalidValueFailsWithAssertionsDisabled(string $method, mixed $value): never
     {
-        \ini_get('zend.assertions') === '1' or throw new SkipTest('zend.assertions is disabled');
-        Expect::exception(\AssertionError::class);
+        // At -1 assertions are compiled out already; 1 can only be switched to 0 at runtime
+        $previous = \ini_get('zend.assertions');
+        $previous === '1' and \ini_set('zend.assertions', '0');
+        Expect::exception(\InvalidArgumentException::class);
 
-        (new RetryOptions())->{$method}($value);
+        try {
+            (new RetryOptions())->{$method}($value);
+        } finally {
+            $previous === '1' and \ini_set('zend.assertions', '1');
+        }
     }
 }
