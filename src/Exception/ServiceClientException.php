@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Spiral\Grpc\Client\Exception;
 
 use Google\Protobuf\Any;
-use Google\Protobuf\Internal\RepeatedField;
+use Google\Protobuf\RepeatedField;
 use Google\Rpc\Status;
 
 final class ServiceClientException extends \RuntimeException implements GrpcClientException
@@ -39,6 +39,9 @@ final class ServiceClientException extends \RuntimeException implements GrpcClie
         return $this->status;
     }
 
+    /**
+     * @return RepeatedField<Any>
+     */
     public function getDetails(): RepeatedField
     {
         return $this->status->getDetails();
@@ -56,7 +59,6 @@ final class ServiceClientException extends \RuntimeException implements GrpcClie
             return null;
         }
 
-        /** @var Any $detail */
         foreach ($details as $detail) {
             if ($detail->is($class)) {
                 return $detail->unpack();
