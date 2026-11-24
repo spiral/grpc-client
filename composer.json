@@ -26,7 +26,7 @@
         "php": ">=8.2",
         "google/common-protos": "^4.6",
         "google/protobuf": "^4.33.6 || ^5",
-        "grpc/grpc": "^1.57",
+        "grpc/grpc": "^1.84.1",
         "spiral/core": "^3.14",
         "spiral/interceptors": "^3.14"
     },
@@ -83,6 +83,11 @@
         "psalm:ci": "psalm -c vendor-bin/psalm/psalm.xml --output-format=github --shepherd --show-info=false --stats --threads=4",
         "test": "testo",
         "test:ci": "testo",
+        "test:cc": [
+            "@putenv TESTO_CI=1",
+            "@putenv XDEBUG_MODE=coverage",
+            "testo --coverage --coverage-clover=runtime/clover.xml --type=!bench"
+        ],
         "infect": [
             "@putenv XDEBUG_MODE=coverage",
             "infection --configuration=infection.json --threads=max"
