@@ -15,8 +15,8 @@ final class ClassGenerator
      */
     public static function generate(string $interface): array
     {
-        $namespace = \substr($interface, 0, (int) \strrpos($interface, '\\'));
         $reflection = new \ReflectionClass($interface);
+        $namespace = $reflection->getNamespaceName();
         /** @var non-empty-string[] $methods */
         $methods = [];
 
@@ -42,19 +42,20 @@ final class ClassGenerator
         $i = 0;
         do {
             $newClassName = $base . ($i === 0 ? '' : $i);
-            $fullClassName = $namespace . '\\' . $newClassName;
+            $fullClassName = $namespace === '' ? $newClassName : $namespace . '\\' . $newClassName;
             ++$i;
         } while (\class_exists($fullClassName));
 
         /** @var class-string<T&ServiceClientInterface> $fullClassName */
         return [$fullClassName, <<<PHP
-            namespace $namespace;
-            final class $newClassName implements
-                \\$interface,
-                \Spiral\Grpc\Client\Internal\ServiceClient\ServiceClientInterface
-            {
-                use \Spiral\Grpc\Client\Internal\ServiceClient\ServiceClientTrait;
-                $methodsStr
+            namespace $namespace {
+                final class $newClassName implements
+                    \\$interface,
+                    \Spiral\Grpc\Client\Internal\ServiceClient\ServiceClientInterface
+                {
+                    use \Spiral\Grpc\Client\Internal\ServiceClient\ServiceClientTrait;
+                    $methodsStr
+                }
             }
             PHP];
     }
