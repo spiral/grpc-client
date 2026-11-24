@@ -1,0 +1,12 @@
+{
+    "require": {
+        "llm/skills": "^1.21",
+        "roxblnfk/unpoly": "^1.8.2",
+        "vimeo/psalm": "^6 || ^7"
+    },
+    "config": {
+        "allow-plugins": {
+            "llm/skills": true
+        }
+    }
+}

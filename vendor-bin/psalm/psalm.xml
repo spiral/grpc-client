@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!--
-    Lives next to the isolated Psalm install in tools/psalm/. resolveFromConfigFile is off, so paths
+    Lives next to the isolated Psalm install in vendor-bin/psalm/. resolveFromConfigFile is off, so paths
     below resolve against the project root (where `composer psalm` runs) and Psalm loads the
     project's own vendor/autoload.php from there.
 -->
@@ -20,7 +20,7 @@
     </projectFiles>
     <stubs>
         <!-- ext-grpc is optional (suggest), and CI analyses without it -->
-        <file name="tools/psalm/stubs/grpc.phpstub" />
+        <file name="vendor-bin/psalm/stubs/grpc.phpstub" />
     </stubs>
     <issueHandlers>
         <!-- Making public classes final would break BC for users who extend them -->

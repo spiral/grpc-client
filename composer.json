@@ -36,7 +36,9 @@
         "internal/dload": "^1.16.5",
         "llm/skills": "^1.15",
         "roxblnfk/unpoly": "^1.8",
-        "spiral/boot": "^3.14"
+        "spiral/boot": "^3.14",
+        "testo/bridge-infection": "^0.1.9",
+        "testo/testo": "^0.10.54"
     },
     "suggest": {
         "ext-grpc": "Required to execute gRPC calls"
@@ -71,11 +73,11 @@
             "dload get --no-interaction"
         ],
         "proto:generate": "php tests/generate-proto.php",
-        "cs:diff": "php-cs-fixer fix --dry-run -v --diff",
-        "cs:fix": "php-cs-fixer fix -v",
-        "psalm": "psalm -c tools/psalm/psalm.xml",
-        "psalm:baseline": "psalm -c tools/psalm/psalm.xml --set-baseline=tools/psalm/psalm-baseline.xml",
-        "psalm:ci": "psalm -c tools/psalm/psalm.xml --output-format=github --shepherd --show-info=false --stats --threads=4",
+        "cs:diff": "php-cs-fixer fix --dry-run -v --diff --config=vendor-bin/code-style/.php-cs-fixer.dist.php",
+        "cs:fix": "php-cs-fixer fix -v --config=vendor-bin/code-style/.php-cs-fixer.dist.php",
+        "psalm": "psalm -c vendor-bin/psalm/psalm.xml",
+        "psalm:baseline": "psalm -c vendor-bin/psalm/psalm.xml --set-baseline=vendor-bin/psalm/psalm-baseline.xml",
+        "psalm:ci": "psalm -c vendor-bin/psalm/psalm.xml --output-format=github --shepherd --show-info=false --stats --threads=4",
         "test": "testo",
         "test:ci": "testo",
         "infect": [
@@ -90,8 +92,8 @@
     "extra": {
         "bamarni-bin": {
             "bin-links": true,
-            "target-directory": "tools",
-            "forward-command": true
+            "forward-command": false,
+            "target-directory": "vendor-bin"
         }
     }
 }

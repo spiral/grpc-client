@@ -2,11 +2,6 @@
 !/.github/
 /runtime/
 /vendor/
-/tools/*/vendor/
-/tools/*/composer.lock
-/tools/*/.agents/
-/tools/*/.claude/
-/tools/*/skills.json
 /.env
 *.log
 /composer.lock
