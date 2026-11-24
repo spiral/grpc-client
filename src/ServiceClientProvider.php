@@ -76,7 +76,6 @@ final class ServiceClientProvider
                 $interceptor instanceof Autowire => $interceptor->resolve($this->factory),
                 default => $interceptor,
             };
-            \assert($i instanceof InterceptorInterface);
             $list[] = $i;
         }
 
