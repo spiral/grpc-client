@@ -32,27 +32,11 @@ jobs:
         ['lowest', 'highest']
       extensions: sockets, grpc
       ini-values: memory_limit=-1, zend.assertions=1
-      # Without a driver the CodecovPlugin from testo.php stays inert.
-      coverage: none
-      dload-cache: true
-      run: composer test:ci
-
-  # One job is enough to report coverage.
-  coverage:
-    uses: spiral/gh-actions/.github/workflows/testo.yml@master
-    with:
-      os: >-
-        ['ubuntu-latest']
-      php: >-
-        ['8.5']
-      dependencies: >-
-        ['highest']
-      extensions: sockets, grpc
-      ini-values: memory_limit=-1, zend.assertions=1
-      coverage: pcov
       dload-cache: true
       # `--` passes the `--coverage-clover` option appended by the reusable workflow on to testo.
       run: composer test:ci --
       codecov: true
+      codecov-php: '8.5'
+      codecov-dependencies: highest
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
