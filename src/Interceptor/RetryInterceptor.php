@@ -46,7 +46,7 @@ final class RetryInterceptor implements InterceptorInterface
      * @param float $backoffCoefficient Coefficient used to calculate the next retry backoff interval.
      *        Default is 2.0.
      * @param int<0, max>|null $maximumInterval Maximum backoff interval between retries in milliseconds.
-     *        Default is 100x of {@see $initialInterval}.
+     *        Default is 200x of {@see $initialInterval}.
      * @param int<0, max> $maximumAttempts Maximum number of attempts.
      * @param float|null $maximumJitterCoefficient Maximum jitter to apply.
      *

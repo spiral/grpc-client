@@ -48,7 +48,7 @@ final class RetryOptions
      * Exponential backoff leads to interval increase.
      * This value is the cap of the interval.
      *
-     * Default is 100x of {@see $initialInterval} if not set.
+     * Default is 200x of {@see $initialInterval} if not set.
      * @var int<0, max>|null
      */
     public ?int $maximumInterval = self::DEFAULT_MAXIMUM_INTERVAL;
