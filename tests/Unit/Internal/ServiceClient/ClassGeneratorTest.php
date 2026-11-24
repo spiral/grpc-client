@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Spiral\Grpc\Client\Tests\Unit\Internal\ServiceClient;
 
 use Spiral\Grpc\Client\Internal\ServiceClient\ClassGenerator;
+use Spiral\Grpc\Client\Tests\Unit\Fixture\MissingMessageService;
 use Spiral\Grpc\Client\Tests\Unit\Fixture\NamingServiceInterface;
+use Spiral\Grpc\Client\Tests\Unit\Fixture\RenamedParametersInterface;
 use Spiral\Grpc\Client\Tests\Unit\Fixture\SignaturesInterface;
 use Spiral\Grpc\Client\Tests\Unit\Fixture\TestServiceInterface;
 use Spiral\Grpc\Client\Tests\Unit\Fixture\UnionReturnService;
@@ -81,6 +83,15 @@ final class ClassGeneratorTest
         Assert::string($code)->contains("return \$this->_handle(__FUNCTION__, \$ctx, \$in, 'Google\Protobuf\GPBEmpty');");
     }
 
+    public function generatedMethodPassesTheDeclaredParameters(): void
+    {
+        [, $code] = ClassGenerator::generate(RenamedParametersInterface::class);
+
+        Assert::string($code)->contains(
+            "return \$this->_handle(__FUNCTION__, \$context, \$request, 'Google\Protobuf\GPBEmpty');",
+        );
+    }
+
     public function generatedClassNameDoesNotClashWithExistingClass(): void
     {
         [$first, $code] = ClassGenerator::generate(NamingServiceInterface::class);
@@ -118,6 +129,14 @@ final class ClassGeneratorTest
             ->withMessage('Method Call must have a single named return type.');
 
         ClassGenerator::generate(UnionReturnService::class);
+    }
+
+    public function generateRejectsMethodWithoutMessageParameter(): never
+    {
+        Expect::exception(\RuntimeException::class)
+            ->withMessage('Method Call must accept a context and a message.');
+
+        ClassGenerator::generate(MissingMessageService::class);
     }
 
     public function renderParameterTypesRejectsDnfType(): never
