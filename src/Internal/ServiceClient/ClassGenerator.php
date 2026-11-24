@@ -134,7 +134,12 @@ final class ClassGenerator
 
     public static function normalizeClassType(\ReflectionNamedType $type, \ReflectionClass $class): string
     {
-        return '\\' . ($type->getName() === 'self' ? $class->getName() : $type->getName());
+        return match ($type->getName()) {
+            // Reflection reports `static` as non-builtin, but it is a keyword, not a class name.
+            'static' => 'static',
+            'self' => '\\' . $class->getName(),
+            default => '\\' . $type->getName(),
+        };
     }
 
     private static function cutDefaultValue(\ReflectionParameter $param): string

@@ -14,7 +14,6 @@ use Testo\Assert;
 use Testo\Codecov\Covers;
 use Testo\Data\DataProvider;
 use Testo\Expect;
-use Testo\Skip;
 use Testo\Test;
 
 #[Test]
@@ -57,7 +56,6 @@ final class ClassGeneratorTest
         Assert::same($code, "public function Call(mixed \$ctx, mixed \$in) {\n\n}");
     }
 
-    #[Skip('Bug: the `static` return type is treated as a class name and rendered as `\static`, which does not parse.')]
     public function staticReturnTypeIsRendered(): void
     {
         $code = ClassGenerator::renderMethod(new \ReflectionMethod(SignaturesInterface::class, 'create'));
