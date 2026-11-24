@@ -10,7 +10,6 @@ use Spiral\Grpc\Client\Internal\StatusCode;
 
 /**
  * @psalm-immutable
- * @psalm-suppress DocblockTypeContradiction
  */
 final class RetryOptions
 {
@@ -87,7 +86,7 @@ final class RetryOptions
      */
     public function withInitialInterval(?int $interval): self
     {
-        $interval === null || $interval >= 0 or throw new \InvalidArgumentException('Invalid initial interval value.');
+        self::isNonNegative($interval) or throw new \InvalidArgumentException('Invalid initial interval value.');
 
         $self = clone $this;
         $self->initialInterval = $interval;
@@ -103,7 +102,7 @@ final class RetryOptions
      */
     public function withCongestionInitialInterval(?int $interval): self
     {
-        $interval === null || $interval >= 0 or throw new \InvalidArgumentException(
+        self::isNonNegative($interval) or throw new \InvalidArgumentException(
             'Invalid congestion initial interval value.',
         );
 
@@ -136,7 +135,7 @@ final class RetryOptions
      */
     public function withMaximumInterval($interval): self
     {
-        \assert($interval === null || $interval >= 0);
+        \assert(self::isNonNegative($interval));
 
         $self = clone $this;
         $self->maximumInterval = $interval;
@@ -151,7 +150,7 @@ final class RetryOptions
      */
     public function withMaximumAttempts(int $attempts): self
     {
-        \assert($attempts >= 0);
+        \assert(self::isNonNegative($attempts));
 
         $self = clone $this;
         $self->maximumAttempts = $attempts;
@@ -177,5 +176,16 @@ final class RetryOptions
         $self = clone $this;
         $self->maximumJitterCoefficient = $coefficient ?? 0.1;
         return $self;
+    }
+
+    /**
+     * Callers are not bound by the `int<0, max>` docblocks, so setters check their input here: written inline,
+     * the check is reported by Psalm as redundant. `mixed`, because {@see withMaximumInterval()} is untyped.
+     *
+     * @psalm-pure
+     */
+    private static function isNonNegative(mixed $value): bool
+    {
+        return $value === null || $value >= 0;
     }
 }
