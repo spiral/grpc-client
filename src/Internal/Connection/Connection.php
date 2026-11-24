@@ -35,7 +35,9 @@ final class Connection implements ConnectionInterface
     #[\Override]
     public function isConnected(): bool
     {
-        return ConnectionState::from($this->stub->getConnectivityState(false)) === ConnectionState::Ready;
+        // A closed channel throws on any state query
+        return !$this->closed
+            && ConnectionState::from($this->stub->getConnectivityState(false)) === ConnectionState::Ready;
     }
 
     #[\Override]
