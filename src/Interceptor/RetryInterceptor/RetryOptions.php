@@ -119,7 +119,7 @@ final class RetryOptions
      */
     public function withBackoffCoefficient(float $coefficient): self
     {
-        \assert($coefficient >= 1.0);
+        $coefficient >= 1.0 or throw new \InvalidArgumentException('Invalid backoff coefficient value.');
 
         $self = clone $this;
         $self->backoffCoefficient = $coefficient;
@@ -135,7 +135,7 @@ final class RetryOptions
      */
     public function withMaximumInterval($interval): self
     {
-        \assert(self::isNonNegative($interval));
+        self::isNonNegative($interval) or throw new \InvalidArgumentException('Invalid maximum interval value.');
 
         $self = clone $this;
         $self->maximumInterval = $interval;
@@ -150,7 +150,7 @@ final class RetryOptions
      */
     public function withMaximumAttempts(int $attempts): self
     {
-        \assert(self::isNonNegative($attempts));
+        self::isNonNegative($attempts) or throw new \InvalidArgumentException('Invalid maximum attempts value.');
 
         $self = clone $this;
         $self->maximumAttempts = $attempts;
