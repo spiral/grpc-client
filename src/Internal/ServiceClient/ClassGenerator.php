@@ -28,11 +28,17 @@ final class ClassGenerator
                 "Method {$method->getName()} must have a single named return type.",
             );
             $returnType = $returnType->getName();
+            $parameters = $method->getParameters();
+            \count($parameters) >= 2 or throw new \RuntimeException(
+                "Method {$method->getName()} must accept a context and a message.",
+            );
+            $ctx = $parameters[0]->getName();
+            $in = $parameters[1]->getName();
             /** @see ServiceClientTrait::_handle() */
             $methods[] = self::renderMethod(
                 $method,
                 <<<PHP
-                return \$this->_handle(__FUNCTION__, \$ctx, \$in, '$returnType');
+                return \$this->_handle(__FUNCTION__, \$$ctx, \$$in, '$returnType');
                 PHP,
             );
         }
