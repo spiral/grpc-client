@@ -20,71 +20,39 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-env:
-  DLOAD_CACHE_DIR: ${{ github.workspace }}/runtime/dload-cache
-
 jobs:
+  # `composer update` fetches protoc, protoc-gen-php-grpc and grpcbin through dload (post-update-cmd);
+  # the Acceptance suite runs against grpcbin.
   testo:
-    name: PHP ${{ matrix.php }} on ${{ matrix.os }}, ${{ matrix.dependencies }}
-    runs-on: ${{ matrix.os }}
-    env:
-      # One job is enough to report coverage; the rest skip collecting it.
-      COVERAGE: ${{ matrix.php == '8.5' && matrix.dependencies == 'highest' }}
+    uses: spiral/gh-actions/.github/workflows/testo.yml@master
+    with:
+      os: >-
+        ['ubuntu-latest']
+      dependencies: >-
+        ['lowest', 'highest']
+      extensions: sockets, grpc
+      ini-values: memory_limit=-1, zend.assertions=1
+      # Without a driver the CodecovPlugin from testo.php stays inert.
+      coverage: none
+      dload-cache: true
+      run: composer test:ci
 
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-        php:
-          - '8.2'
-          - '8.3'
-          - '8.4'
-          - '8.5'
-          - '8.6'
-        dependencies:
-          - lowest
-          - highest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Install PHP
-        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: sockets, grpc
-          ini-values: memory_limit=-1, zend.assertions=1
-          coverage: pcov
-
-      # `composer update` fetches protoc, protoc-gen-php-grpc and grpcbin through dload (post-update-cmd),
-      # so the registry has to be in place before the dependencies are installed.
-      # A GitHub cache entry is immutable, so the run_id keeps the key missing and restore-keys reads the newest.
-      - name: Restore the dload version registry
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: runtime/dload-cache
-          key: dload-registry-${{ github.run_id }}-${{ strategy.job-index }}
-          restore-keys: dload-registry-
-
-      - name: Install dependencies
-        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
-        with:
-          dependency-versions: ${{ matrix.dependencies }}
-          # PHP 8.6 is in development: dependencies may not declare support for it yet.
-          composer-options: ${{ matrix.php == '8.6' && '--ignore-platform-req=php' || '' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Run tests
-        run: composer test:ci -- ${{ env.COVERAGE == 'true' && '--coverage' || '--no-coverage' }}
-
-      - name: Upload coverage to Codecov
-        if: env.COVERAGE == 'true'
-        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-        with:
-          files: runtime/coverage/clover.xml
-          token: ${{ secrets.CODECOV_TOKEN }}
+  # One job is enough to report coverage.
+  coverage:
+    uses: spiral/gh-actions/.github/workflows/testo.yml@master
+    with:
+      os: >-
+        ['ubuntu-latest']
+      php: >-
+        ['8.5']
+      dependencies: >-
+        ['highest']
+      extensions: sockets, grpc
+      ini-values: memory_limit=-1, zend.assertions=1
+      coverage: pcov
+      dload-cache: true
+      # `--` passes the `--coverage-clover` option appended by the reusable workflow on to testo.
+      run: composer test:ci --
+      codecov: true
+    secrets:
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
