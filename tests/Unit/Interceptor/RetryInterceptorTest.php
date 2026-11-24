@@ -7,6 +7,7 @@ namespace Spiral\Grpc\Client\Tests\Unit\Interceptor;
 use Spiral\Core\Container;
 use Spiral\Grpc\Client\Exception\ServiceClientException;
 use Spiral\Grpc\Client\Exception\TimeoutException;
+use Spiral\Grpc\Client\Interceptor\Helper;
 use Spiral\Grpc\Client\Interceptor\RetryInterceptor;
 use Spiral\Grpc\Client\Interceptor\RetryInterceptor\RetryOptions;
 use Spiral\Grpc\Client\Internal\StatusCode;
@@ -150,6 +151,28 @@ final class RetryInterceptorTest
 
         Assert::same($result, 'ok');
         Assert::same($handler->calls(), 2);
+    }
+
+    public function retryGetsOnlyTheTimeLeftUntilTheDeadline(): void
+    {
+        // The first attempt spends 200 ms of the 300 ms deadline
+        $handler = new RecordingHandler(
+            static function (CallContextInterface $ctx, int $call): string {
+                if ($call === 1) {
+                    \usleep(200_000);
+                    throw new ServiceClientException((object) ['code' => 14, 'details' => 'error', 'metadata' => []]);
+                }
+
+                return 'ok';
+            },
+        );
+        $context = CallContextFactory::create(options: ['timeout' => 300_000]);
+
+        self::interceptor()->intercept($context, $handler);
+
+        [$first, $second] = $handler->contexts;
+        Assert::same(Helper::getOptions($first)['timeout'], 300_000);
+        Assert::true(Helper::getOptions($second)['timeout'] <= 100_000);
     }
 
     #[DataProvider('provideIntervalsThatMustBeHonored')]
